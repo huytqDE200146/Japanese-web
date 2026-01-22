@@ -14,7 +14,7 @@ public class DBConnection {
     private static final String URL =
     "jdbc:sqlserver://localhost:1433;databaseName=japanese_web;encrypt=true;trustServerCertificate=true";
 private static final String USER = "sa";
-private static final String PASSWORD = "1";
+private static final String PASSWORD = "sa";
 
     public static Connection getConnection() {
         try {
