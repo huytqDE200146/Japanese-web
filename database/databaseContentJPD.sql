@@ -26,6 +26,8 @@ VALUES
 ('linh02', '123456', 'linh02@gmail.com', 'Nguyen Thi Linh', 'USER', 'ACTIVE'),
 ('nam03', '123456', 'nam03@gmail.com', 'Le Van Nam', 'USER', 'ACTIVE');
 GO
+INSERT INTO users (username, password, email, full_name, role, status)
+VALUES('nhaphuong22','123456', 'nhaphuong@gmail.com', 'Le Nha Phuong', 'USER', 'ACTIVE')
 
 INSERT INTO users (username, password, email, full_name, role, status)
 VALUES
