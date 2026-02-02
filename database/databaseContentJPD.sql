@@ -62,8 +62,100 @@ VALUES
  N'Học bảng chữ cái Katakana',
  N'lessons/n5/katakana.html'),
 
-(N'Giới thiệu bản thân', 'N5',
- N'Cách tự giới thiệu bằng tiếng Nhật',
- N'lessons/n4/self_introduction.html');
+(N'Từ Vựng & Kanji', 'N5',
+ N'Bài 1',
+ N'lessons/n5/vocabulary1.html'),
+
+(N'Từ Vựng & Kanji', 'N5',
+ N'Bài 2',
+ N'lessons/n5/vocabulary2.html'),
+
+(N'Từ Vựng & Kanji', 'N5',
+ N'Bài 3',
+ N'lessons/n5/vocabulary3.html'),
+ 
+(N'Từ Vựng & Kanji', 'N5',
+ N'Bài 4',
+ N'lessons/n5/vocabulary4.html'),
+ 
+(N'Từ Vựng & Kanji', 'N5',
+ N'Bài 5',
+ N'lessons/n5/vocabulary5.html'),
+ 
+(N'Từ Vựng & Kanji', 'N5',
+ N'Bài 6',
+ N'lessons/n5/vocabulary6.html'),
+
+(N'Từ Vựng & Kanji', 'N5',
+ N'Bài 7',
+ N'lessons/n5/vocabulary7.html'),
+ 
+(N'Ngữ pháp cơ bản', 'N5',
+ N'Bài 1',
+ N'lessons/n5/basic_grammar1.html'),
+ 
+(N'Ngữ pháp cơ bản', 'N5',
+ N'Bài 2',
+ N'lessons/n5/basic_grammar2.html'),
+ 
+(N'Ngữ pháp cơ bản', 'N5',
+ N'Bài 3',
+ N'lessons/n5/basic_grammar3.html'),
+ 
+(N'Ngữ pháp cơ bản', 'N5',
+ N'Bài 4',
+ N'lessons/n5/basic_grammar4.html'),
+ 
+(N'Ngữ pháp cơ bản', 'N5',
+ N'Bài 5',
+ N'lessons/n5/basic_grammar5.html'),
+ 
+(N'Ngữ pháp cơ bản', 'N5',
+ N'Bài 6',
+ N'lessons/n5/basic_grammar6.html'),
+ 
+(N'Ngữ pháp cơ bản', 'N5',
+ N'Bài 7',
+ N'lessons/n5/basic_grammar7.html'),
+ 
+(N'Kanji', 'N5',
+ N'Bài 1',
+ N'lessons/n5/Kanji1.html'),
+ 
+(N'Kanji', 'N5',
+ N'Bài 2',
+ N'lessons/n5/Kanji2.html'),
+ 
+(N'Kanji', 'N5',
+ N'Bài 3',
+ N'lessons/n5/Kanji3.html'),
+ 
+(N'Kanji', 'N5',
+ N'Bài 4',
+ N'lessons/n5/Kanji4.html'),
+ 
+(N'Kanji', 'N5',
+ N'Bài 5',
+ N'lessons/n5/Kanji5.html'),
+ 
+(N'Kanji', 'N5',
+ N'Bài 6',
+ N'lessons/n5/Kanji6.html'),
+ 
+(N'Kanji', 'N5',
+ N'Bài 7',
+ N'lessons/n5/Kanji7.html');
+
+ INSERT INTO lesson (name, level, description, content_path)
+ VALUES
+  (N'Từ Vựng & Kanji', 'N5',
+ N'Thời gian/Sinh hoạt hằng ngày - Lịch trình/Hoạt động - Mỗi ngày',
+ N'lessons/n5/vocabulary3.html'),
+   (N'Từ Vựng & Kanji', 'N5',
+ N'Thời gian/Sinh hoạt hằng ngày - Lịch trình/Hoạt động - Mỗi ngày',
+ N'lessons/n5/vocabulary3.html');
+
+
+
 
 
