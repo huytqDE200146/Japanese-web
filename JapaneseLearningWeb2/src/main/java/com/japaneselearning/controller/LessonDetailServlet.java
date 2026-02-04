@@ -43,7 +43,7 @@ public class LessonDetailServlet extends HttpServlet {
                 return;
             }
 
-            // 🔴 ĐỌC FILE NỘI DUNG LESSON
+            // Read lesson content from file
             String content;
             try (InputStream is = getServletContext()
                     .getResourceAsStream("/" + lesson.getContentPath())) {
@@ -55,8 +55,21 @@ public class LessonDetailServlet extends HttpServlet {
                 }
             }
 
+            // Get adjacent lessons for navigation
+            int[] adjacentIds = lessonDAO.getAdjacentLessonIds(id);
+            int prevId = adjacentIds[0];
+            int nextId = adjacentIds[1];
+            
+            // Get lesson names for navigation display
+            Lesson prevLesson = prevId != -1 ? lessonDAO.getLessonById(prevId) : null;
+            Lesson nextLesson = nextId != -1 ? lessonDAO.getLessonById(nextId) : null;
+
             request.setAttribute("lesson", lesson);
             request.setAttribute("lessonContent", content);
+            request.setAttribute("prevLessonId", prevId);
+            request.setAttribute("nextLessonId", nextId);
+            request.setAttribute("prevLesson", prevLesson);
+            request.setAttribute("nextLesson", nextLesson);
 
             request.getRequestDispatcher("/lessonDetail.jsp")
                    .forward(request, response);

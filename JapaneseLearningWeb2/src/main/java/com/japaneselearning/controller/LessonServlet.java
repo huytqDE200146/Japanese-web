@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 @WebServlet("/lessons")
 public class LessonServlet extends HttpServlet {
@@ -26,8 +27,14 @@ public class LessonServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
+        // Get lessons grouped by category for better display
+        Map<String, List<Lesson>> groupedLessons = lessonDAO.getLessonsGroupedByCategory();
+        request.setAttribute("groupedLessons", groupedLessons);
+        
+        // Also pass flat list for backward compatibility
         List<Lesson> lessons = lessonDAO.getAllLessons();
         request.setAttribute("lessons", lessons);
+        
         request.getRequestDispatcher("/lesson.jsp")
                .forward(request, response);
     }
