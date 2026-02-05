@@ -1,0 +1,203 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700&family=Poppins:wght@300;400;600&display=swap');
+
+:root {
+    --primary-red: #bc002d; /* Japan Flag Red */
+    --deep-blue: #003366;
+    --clean-white: #ffffff;
+    --glass-bg: rgba(255, 255, 255, 0.85);
+    --glass-border: rgba(255, 255, 255, 0.4);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    /* Iconic Japan Background - Chureito Pagoda & Mt Fuji */
+    background: url('https://images.unsplash.com/photo-1490806843957-31f4c9a91c65?q=80&w=2070&auto=format&fit=crop') no-repeat center center/cover;
+    position: relative;
+}
+
+/* Overlay for contrast */
+body::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to top, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.2) 100%);
+    z-index: 0;
+}
+
+/* Flying Kana Container */
+.kana-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+    overflow: hidden;
+}
+
+.kana {
+    position: absolute;
+    color: rgba(255, 255, 255, 0.25);
+    font-family: 'Noto Serif JP', serif;
+    font-weight: 700;
+    user-select: none;
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.3);
+    animation: floatUp linear infinite;
+    bottom: -10%; /* Start below screen */
+}
+
+@keyframes floatUp {
+    0% {
+        transform: translateY(0) translateX(0) rotate(0deg);
+        opacity: 0;
+    }
+    10% {
+        opacity: 0.8;
+    }
+    90% {
+        opacity: 0.6;
+    }
+    100% {
+        transform: translateY(-120vh) translateX(50px) rotate(45deg); /* Move up and slightly right */
+        opacity: 0;
+    }
+}
+
+/* Login Card */
+.login-card {
+    position: relative;
+    z-index: 10;
+    background: rgba(255, 255, 255, 0.2); /* More transparent */
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    padding: 3rem 2.5rem;
+    border-radius: 16px;
+    border: 1px solid var(--glass-border);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+    width: 100%;
+    max-width: 420px;
+    text-align: center;
+    border-top: 5px solid var(--primary-red); /* Red accent on top */
+    animation: zoomIn 0.8s ease-out;
+}
+
+@keyframes zoomIn {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+/* Titles */
+.welcome-text {
+    color: #fff;
+    margin-bottom: 2rem;
+}
+
+.welcome-text h1 {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 2.2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+
+.welcome-text p {
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.9);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    font-weight: 300;
+}
+
+/* Form Elements */
+.input-group {
+    position: relative;
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.input-group label {
+    display: block;
+    color: white;
+    margin-bottom: 8px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+}
+
+.input-group input {
+    width: 100%;
+    padding: 14px 16px;
+    background: rgba(255, 255, 255, 0.9);
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    color: #333;
+    transition: all 0.3s ease;
+    border-left: 0px solid var(--primary-red);
+}
+
+.input-group input:focus {
+    outline: none;
+    background: #fff;
+    border-left: 6px solid var(--primary-red);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+/* Button */
+.btn-login {
+    width: 100%;
+    padding: 15px;
+    margin-top: 10px;
+    border: none;
+    border-radius: 8px;
+    background: var(--primary-red);
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(188, 0, 45, 0.4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+.btn-login:hover {
+    background: #a30027;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(188, 0, 45, 0.6);
+}
+
+.btn-login span {
+    font-size: 1.3rem; /* Arrow icon size */
+}
+
+/* Alert */
+.alert {
+    background: rgba(255, 235, 238, 0.95);
+    color: var(--primary-red);
+    padding: 12px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    border: 1px solid #ffcdd2;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
