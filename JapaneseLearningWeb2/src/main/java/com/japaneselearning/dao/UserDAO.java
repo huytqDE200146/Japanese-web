@@ -75,4 +75,74 @@ public class UserDAO {
         }
         return false;
     }
+    
+    /**
+     * Nâng cấp user lên Premium
+     * @param userId ID của user
+     * @param daysToAdd Số ngày Premium
+     */
+    public boolean upgradeToPremium(int userId, int daysToAdd) {
+        String sql = "UPDATE users SET is_premium = 1, premium_until = DATEADD(day, ?, " +
+                     "CASE WHEN premium_until IS NULL OR premium_until < GETDATE() " +
+                     "THEN GETDATE() ELSE premium_until END) WHERE id = ?";
+        
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            
+            ps.setInt(1, daysToAdd);
+            ps.setInt(2, userId);
+            
+            return ps.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+    
+    /**
+     * Lấy thông tin user theo ID (bao gồm Premium info)
+     */
+    public User getUserById(int userId) {
+        String sql = "SELECT * FROM users WHERE id = ?";
+        
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            
+            ps.setInt(1, userId);
+            ResultSet rs = ps.executeQuery();
+            
+            if (rs.next()) {
+                return mapResultSetToUser(rs);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+    
+    /**
+     * Map ResultSet to User (với Premium fields)
+     */
+    private User mapResultSetToUser(ResultSet rs) throws Exception {
+        User u = new User();
+        u.setId(rs.getInt("id"));
+        u.setUsername(rs.getString("username"));
+        u.setEmail(rs.getString("email"));
+        u.setFullName(rs.getString("full_name"));
+        u.setRole(rs.getString("role"));
+        u.setStatus(rs.getString("status"));
+        u.setCreatedAt(rs.getTimestamp("created_at"));
+        
+        // Premium fields (với null check cho cột mới)
+        try {
+            u.setPremium(rs.getBoolean("is_premium"));
+            u.setPremiumUntil(rs.getTimestamp("premium_until"));
+        } catch (Exception e) {
+            // Columns might not exist yet
+            u.setPremium(false);
+            u.setPremiumUntil(null);
+        }
+        
+        return u;
+    }
 }

@@ -191,6 +191,104 @@ a {
     transform: translateY(-2px);
 }
 
+/* ===== PREMIUM NAVBAR BUTTON ===== */
+.btn-premium-nav {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.5rem 1rem;
+    margin-right: 1rem;
+    border-radius: 25px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 183, 0, 0.1));
+    border: 1px solid rgba(255, 215, 0, 0.4);
+    color: #ffd700;
+}
+.btn-premium-nav:hover {
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.3), rgba(255, 183, 0, 0.2));
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(255, 215, 0, 0.3);
+    color: #ffd700;
+}
+.btn-premium-nav.active {
+    background: linear-gradient(135deg, #ffd700, #ffb700);
+    color: #1a1a2e;
+    border-color: transparent;
+}
+.btn-premium-nav.active:hover {
+    box-shadow: 0 5px 25px rgba(255, 215, 0, 0.5);
+}
+
+/* ===== USER SECTION NAV ===== */
+.user-section-nav {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-right: 1rem;
+}
+.user-section-nav .user-avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: var(--gradient-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    font-weight: 700;
+    color: white;
+    position: relative;
+}
+/* Crown ring for Premium users */
+.user-section-nav .user-avatar.premium {
+    background: linear-gradient(135deg, #ffd700, #ffb700);
+    color: #1a1a2e;
+}
+.user-section-nav .user-avatar.premium::before {
+    content: '';
+    position: absolute;
+    top: -4px;
+    left: -4px;
+    right: -4px;
+    bottom: -4px;
+    border-radius: 50%;
+    background: conic-gradient(
+        from 0deg,
+        #ffd700,
+        #ff9500,
+        #ffd700,
+        #ffed4a,
+        #ffd700
+    );
+    z-index: -1;
+    animation: rotateCrown 3s linear infinite;
+}
+.user-section-nav .user-avatar.premium::after {
+    content: '👑';
+    position: absolute;
+    top: -14px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.8rem;
+    animation: bounceCrown 1.5s ease-in-out infinite;
+}
+@keyframes rotateCrown {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+@keyframes bounceCrown {
+    0%, 100% { transform: translateX(-50%) translateY(0); }
+    50% { transform: translateX(-50%) translateY(-3px); }
+}
+.user-section-nav .user-name {
+    color: var(--light-text);
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
 /* ===== MAIN CONTAINER ===== */
 .main-container {
     max-width: 1400px;

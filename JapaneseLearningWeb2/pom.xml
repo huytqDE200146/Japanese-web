@@ -36,6 +36,14 @@
             <artifactId>jakarta.servlet.jsp.jstl</artifactId>
             <version>3.0.1</version>
         </dependency>
+        
+        <!-- PayOS Payment SDK -->
+        <dependency>
+            <groupId>vn.payos</groupId>
+            <artifactId>payos-java</artifactId>
+            <version>1.0.3</version>
+            <type>jar</type>
+        </dependency>
     </dependencies>
     
     <build>
