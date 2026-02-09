@@ -92,13 +92,25 @@ public class PayOSService {
             clientId = prop.getProperty("payos.clientId").trim();
             apiKey = prop.getProperty("payos.apiKey").trim();
             checksumKey = prop.getProperty("payos.checksumKey").trim();
-            returnUrl = prop.getProperty("payos.returnUrl").trim();
-            cancelUrl = prop.getProperty("payos.cancelUrl").trim();
+            
+            // Đọc baseUrl và tự động tạo returnUrl/cancelUrl
+            String baseUrl = prop.getProperty("payos.baseUrl");
+            if (baseUrl != null && !baseUrl.isEmpty()) {
+                baseUrl = baseUrl.trim();
+                returnUrl = baseUrl + "/paymentSuccess";
+                cancelUrl = baseUrl + "/paymentCancel";
+            } else {
+                // Fallback to old format if baseUrl not defined
+                returnUrl = prop.getProperty("payos.returnUrl", "http://localhost:9999/JapaneseLearningWeb/paymentSuccess").trim();
+                cancelUrl = prop.getProperty("payos.cancelUrl", "http://localhost:9999/JapaneseLearningWeb/paymentCancel").trim();
+            }
             
             System.out.println("Loaded PayOS Config:");
             System.out.println("- ClientID: " + clientId.substring(0, 5) + "...");
             System.out.println("- API Key: " + apiKey.substring(0, 5) + "...");
             System.out.println("- Checksum: " + checksumKey.substring(0, 5) + "...");
+            System.out.println("- Return URL: " + returnUrl);
+            System.out.println("- Cancel URL: " + cancelUrl);
             
         } catch (Exception e) {
             e.printStackTrace();
