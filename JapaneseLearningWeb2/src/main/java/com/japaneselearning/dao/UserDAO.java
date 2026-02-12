@@ -46,15 +46,7 @@ public class UserDAO {
 
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                User u = new User();
-                u.setId(rs.getInt("id"));
-                u.setUsername(rs.getString("username"));
-                u.setEmail(rs.getString("email"));
-                u.setFullName(rs.getString("full_name"));
-                u.setRole(rs.getString("role"));
-                u.setStatus(rs.getString("status"));
-                u.setCreatedAt(rs.getTimestamp("created_at"));
-                return u;
+                return mapResultSetToUser(rs);
             }
         } catch (Exception e) {
             e.printStackTrace();

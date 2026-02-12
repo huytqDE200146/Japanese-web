@@ -75,7 +75,7 @@
                 <a href="premium.jsp" class="premium-btn <%= navIsPremium ? "is-premium" : "" %>">
                     <% if (navIsPremium) { %>
                         <span class="premium-icon">👑</span>
-                        <span class="premium-text">Premium</span>
+                        <span class="premium-text">Thay đổi gói</span>
                     <% } else { %>
                         <span class="premium-icon">⭐</span>
                         <span class="premium-text">Nâng cấp</span>

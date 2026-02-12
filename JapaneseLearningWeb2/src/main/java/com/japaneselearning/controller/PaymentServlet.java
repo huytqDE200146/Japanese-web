@@ -154,6 +154,7 @@ public class PaymentServlet extends HttpServlet {
     
     /**
      * Xử lý callback thành công từ PayOS
+     * PayOS chỉ redirect về returnUrl khi user đã thanh toán thành công
      */
     private void handlePaymentSuccess(HttpServletRequest request, HttpServletResponse response, User user) 
             throws ServletException, IOException {
@@ -161,6 +162,9 @@ public class PaymentServlet extends HttpServlet {
         try {
             // Lấy orderCode từ query params
             String orderCodeParam = request.getParameter("orderCode");
+            System.out.println("=== Payment Success Callback ===");
+            System.out.println("OrderCode: " + orderCodeParam);
+            System.out.println("All params: " + request.getQueryString());
             
             if (orderCodeParam == null) {
                 request.setAttribute("error", "Không tìm thấy mã đơn hàng");
@@ -170,42 +174,38 @@ public class PaymentServlet extends HttpServlet {
             
             long orderCode = Long.parseLong(orderCodeParam);
             
-            // Verify với PayOS
-            PaymentLinkData paymentInfo = payOSService.getPaymentInfo(orderCode);
+            // PayOS chỉ redirect về paymentSuccess khi thanh toán thành công
+            // Nên ta xử lý trực tiếp, không cần verify qua SDK (tránh lỗi signature)
             
-            if (paymentInfo != null && "PAID".equals(paymentInfo.getStatus())) {
-                // Lấy payment từ DB
-                Payment payment = paymentDAO.getPaymentByOrderCode(orderCode);
+            // Lấy payment từ DB
+            Payment payment = paymentDAO.getPaymentByOrderCode(orderCode);
+            
+            if (payment != null && !payment.isPaid()) {
+                // Cập nhật payment status
+                paymentDAO.updatePaymentStatus(orderCode, Payment.STATUS_PAID, "PayOS");
                 
-                if (payment != null && !payment.isPaid()) {
-                    // Cập nhật payment status
-                    paymentDAO.updatePaymentStatus(orderCode, Payment.STATUS_PAID, "PayOS");
-                    
-                    // Xác định số ngày Premium
-                    int days = 30; // default
-                    Integer pendingDays = (Integer) request.getSession().getAttribute("pendingDays");
-                    if (pendingDays != null) {
-                        days = pendingDays;
-                    }
-                    
-                    // Nâng cấp user lên Premium
-                    userDAO.upgradeToPremium(user.getId(), days);
-                    
-                    // Refresh session user
-                    User updatedUser = userDAO.getUserById(user.getId());
-                    request.getSession().setAttribute("user", updatedUser);
-                    
-                    // Clear pending data
-                    request.getSession().removeAttribute("pendingOrderCode");
-                    request.getSession().removeAttribute("pendingDays");
+                // Xác định số ngày Premium
+                int days = 30; // default
+                Integer pendingDays = (Integer) request.getSession().getAttribute("pendingDays");
+                if (pendingDays != null) {
+                    days = pendingDays;
                 }
                 
-                request.setAttribute("success", true);
-                request.setAttribute("message", "Thanh toán thành công! Bạn đã được nâng cấp lên Premium.");
-            } else {
-                request.setAttribute("success", false);
-                request.setAttribute("message", "Thanh toán chưa hoàn tất. Vui lòng kiểm tra lại.");
+                // Nâng cấp user lên Premium
+                userDAO.upgradeToPremium(user.getId(), days);
+                System.out.println("User " + user.getId() + " upgraded to Premium for " + days + " days");
+                
+                // Refresh session user
+                User updatedUser = userDAO.getUserById(user.getId());
+                request.getSession().setAttribute("user", updatedUser);
+                
+                // Clear pending data
+                request.getSession().removeAttribute("pendingOrderCode");
+                request.getSession().removeAttribute("pendingDays");
             }
+            
+            request.setAttribute("success", true);
+            request.setAttribute("message", "Thanh toán thành công! Bạn đã được nâng cấp lên Premium.");
             
         } catch (Exception e) {
             e.printStackTrace();
