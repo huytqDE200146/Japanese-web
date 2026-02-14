@@ -21,7 +21,7 @@ public class PaymentDAO {
             
             ps.setInt(1, payment.getUserId());
             ps.setLong(2, payment.getOrderCode());
-            ps.setInt(3, payment.getAmount());
+            ps.setInt(3, payment.getAmount());  
             ps.setString(4, payment.getDescription());
             ps.setString(5, payment.getStatus());
             ps.setString(6, payment.getCheckoutUrl());
