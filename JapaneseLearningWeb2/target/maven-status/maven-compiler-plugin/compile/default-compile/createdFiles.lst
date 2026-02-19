@@ -4,6 +4,8 @@ com\japaneselearning\controller\LessonServlet.class
 com\japaneselearning\controller\PaymentServlet.class
 com\japaneselearning\service\PayOSService.class
 com\japaneselearning\dao\LessonDAO.class
+com\japaneselearning\controller\LogoutServlet.class
+com\japaneselearning\controller\RegisterServlet.class
 com\japaneselearning\dao\PaymentDAO.class
 com\japaneselearning\controller\LoginServlet.class
 com\japaneselearning\model\User.class

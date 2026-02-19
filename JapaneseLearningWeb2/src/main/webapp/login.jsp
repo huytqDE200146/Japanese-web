@@ -36,6 +36,14 @@
         </div>
         <%
             }
+            String success = (String) request.getAttribute("success");
+            if (success != null) {
+        %>
+        <div class="alert-success">
+            ✅ <%= success %>
+        </div>
+        <%
+            }
         %>
 
         <form action="login" method="post">
@@ -46,7 +54,20 @@
 
             <div class="input-group">
                 <label for="password">Password / パスワード</label>
-                <input type="password" id="password" name="password" required placeholder="••••••••">
+                <div class="password-wrapper">
+                    <input type="password" id="password" name="password" required placeholder="••••••••">
+                    <button type="button" class="toggle-password" onclick="togglePassword('password', this)" title="Hiện/Ẩn mật khẩu">
+                        👁
+                    </button>
+                </div>
+            </div>
+
+            <div class="remember-group">
+                <label class="remember-label">
+                    <input type="checkbox" name="remember" id="remember">
+                    <span class="checkmark"></span>
+                    Ghi nhớ đăng nhập
+                </label>
             </div>
 
             <button type="submit" class="btn-login">
@@ -66,6 +87,10 @@
         <form id="googleForm" action="google-login" method="post" style="display:none;">
             <input type="hidden" name="credential" id="googleCredential">
         </form>
+
+        <div class="switch-form">
+            Chưa có tài khoản? <a href="register">Đăng ký</a>
+        </div>
     </div>
 
     <script>
@@ -141,6 +166,18 @@
                 );
             }
         };
+
+        // Toggle password visibility
+        function togglePassword(inputId, btn) {
+            const input = document.getElementById(inputId);
+            if (input.type === 'password') {
+                input.type = 'text';
+                btn.textContent = '🙈';
+            } else {
+                input.type = 'password';
+                btn.textContent = '👁';
+            }
+        }
     </script>
 </body>
 </html>
