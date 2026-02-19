@@ -14,6 +14,7 @@ public class User {
     private Timestamp createdAt;
     private boolean isPremium;
     private Timestamp premiumUntil;
+    private String googleId;
 
     // Constructor rỗng (bắt buộc cho Servlet/JSP)
     public User() {
@@ -121,6 +122,14 @@ public class User {
     
     public void setPremiumUntil(Timestamp premiumUntil) {
         this.premiumUntil = premiumUntil;
+    }
+    
+    public String getGoogleId() {
+        return googleId;
+    }
+    
+    public void setGoogleId(String googleId) {
+        this.googleId = googleId;
     }
     
     // Helper method to check if Premium is still active

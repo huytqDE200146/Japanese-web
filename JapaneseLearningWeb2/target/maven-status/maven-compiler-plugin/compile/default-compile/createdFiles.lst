@@ -1,4 +1,5 @@
 com\japaneselearning\dao\UserDAO.class
+com\japaneselearning\controller\GoogleLoginServlet.class
 com\japaneselearning\controller\LessonServlet.class
 com\japaneselearning\controller\PaymentServlet.class
 com\japaneselearning\service\PayOSService.class

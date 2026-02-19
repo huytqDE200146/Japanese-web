@@ -154,3 +154,7 @@ VALUES
    (N'Từ Vựng & Kanji', 'N5',
  N'Thời gian/Sinh hoạt hằng ngày - Lịch trình/Hoạt động - Mỗi ngày',
  N'lessons/n5/vocabulary3.html');
+
+-- ===== Google Login: Thêm cột google_id =====
+ALTER TABLE users ADD google_id VARCHAR(255) NULL;
+GO

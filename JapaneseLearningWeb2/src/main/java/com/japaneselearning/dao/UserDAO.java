@@ -54,6 +54,51 @@ public class UserDAO {
         return null;
     }
 
+    // Tìm user theo Google ID
+    public User findByGoogleId(String googleId) {
+        String sql = "SELECT * FROM users WHERE google_id=? AND status='ACTIVE'";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, googleId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return mapResultSetToUser(rs);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    // Đăng ký user từ Google (không có password)
+    public User registerGoogleUser(String googleId, String email, String fullName) {
+        String sql = "INSERT INTO users(username, password, email, full_name, role, status, google_id) "
+                   + "VALUES (?, '', ?, ?, 'USER', 'ACTIVE', ?)";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
+
+            // Dùng email làm username (loại bỏ @...)
+            String username = email.split("@")[0];
+            ps.setString(1, username);
+            ps.setString(2, email);
+            ps.setString(3, fullName);
+            ps.setString(4, googleId);
+
+            int rows = ps.executeUpdate();
+            if (rows > 0) {
+                ResultSet keys = ps.getGeneratedKeys();
+                if (keys.next()) {
+                    return getUserById(keys.getInt(1));
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     // Kiểm tra username tồn tại
     public boolean isUsernameExist(String username) {
         String sql = "SELECT id FROM users WHERE username=?";
@@ -133,6 +178,13 @@ public class UserDAO {
             // Columns might not exist yet
             u.setPremium(false);
             u.setPremiumUntil(null);
+        }
+        
+        // Google ID field
+        try {
+            u.setGoogleId(rs.getString("google_id"));
+        } catch (Exception e) {
+            u.setGoogleId(null);
         }
         
         return u;
