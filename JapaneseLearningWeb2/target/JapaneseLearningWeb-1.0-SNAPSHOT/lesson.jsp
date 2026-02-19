@@ -183,9 +183,15 @@
         /* Lessons List */
         .lessons-container {
             padding: 0.75rem;
-            max-height: 280px;
+            max-height: 400px;
             overflow-y: auto;
             flex-grow: 1;
+            transition: max-height 0.4s ease, padding 0.4s ease;
+        }
+        .category-card.collapsed .lessons-container {
+            max-height: 0;
+            padding: 0 0.75rem;
+            overflow: hidden;
         }
         .lessons-container::-webkit-scrollbar {
             width: 4px;
@@ -370,7 +376,7 @@
             String gradient = categoryGradients.getOrDefault(category, "gradient-default");
             catIndex++;
         %>
-        <div class="category-card animate-fade-in" id="cat-<%= catIndex %>">
+        <div class="category-card animate-fade-in collapsed" id="cat-<%= catIndex %>">
             <div class="category-card-header" onclick="toggleCategory(<%= catIndex %>)">
                 <div class="category-icon-box <%= gradient %>"><%= icon %></div>
                 <div class="category-info">
@@ -415,19 +421,7 @@
 <script>
     function toggleCategory(id) {
         const card = document.getElementById('cat-' + id);
-        const container = document.getElementById('lessons-' + id);
-        
         card.classList.toggle('collapsed');
-        
-        if (card.classList.contains('collapsed')) {
-            container.style.maxHeight = '0';
-            container.style.padding = '0 1rem';
-            container.style.overflow = 'hidden';
-        } else {
-            container.style.maxHeight = '400px';
-            container.style.padding = '1rem';
-            container.style.overflow = 'auto';
-        }
     }
 </script>
 </body>
