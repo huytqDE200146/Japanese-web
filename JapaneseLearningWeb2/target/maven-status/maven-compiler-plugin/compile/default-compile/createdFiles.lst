@@ -9,6 +9,7 @@ com\japaneselearning\controller\RegisterServlet.class
 com\japaneselearning\dao\PaymentDAO.class
 com\japaneselearning\controller\LoginServlet.class
 com\japaneselearning\model\User.class
+com\japaneselearning\controller\ProfileServlet.class
 com\japaneselearning\service\PayOSService$PaymentResponse.class
 com\japaneselearning\model\Payment.class
 com\japaneselearning\controller\LessonDetailServlet.class

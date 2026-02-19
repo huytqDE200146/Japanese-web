@@ -115,17 +115,9 @@
 <body>
 
 <!-- ===== NAVBAR ===== -->
-<nav class="navbar navbar-expand-lg">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="home.jsp">日本語学習</a>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav me-auto">
-                <li class="nav-item"><a class="nav-link" href="home.jsp">🏠 Home</a></li>
-                <li class="nav-item"><a class="nav-link" href="lesson">📚 Courses</a></li>
-            </ul>
-        </div>
-    </div>
-</nav>
+<jsp:include page="components/navbar.jsp">
+    <jsp:param name="activePage" value=""/>
+</jsp:include>
 
 <main>
     <div class="result-card">

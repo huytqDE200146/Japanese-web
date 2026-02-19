@@ -137,6 +137,36 @@ public class UserDAO {
     }
     
     /**
+     * Cập nhật thông tin profile user
+     */
+    public boolean updateProfile(int userId, String fullName, String email, String password) {
+        String sql;
+        if (password != null && !password.trim().isEmpty()) {
+            sql = "UPDATE users SET full_name=?, email=?, password=? WHERE id=?";
+        } else {
+            sql = "UPDATE users SET full_name=?, email=? WHERE id=?";
+        }
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, fullName);
+            ps.setString(2, email);
+            if (password != null && !password.trim().isEmpty()) {
+                ps.setString(3, password);
+                ps.setInt(4, userId);
+            } else {
+                ps.setInt(3, userId);
+            }
+
+            return ps.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    /**
      * Lấy thông tin user theo ID (bao gồm Premium info)
      */
     public User getUserById(int userId) {

@@ -9,12 +9,16 @@
     // Avatar letter
     String navAvatarLetter = "U";
     String navUserName = "User";
+    String navEmail = "";
+    String navUsername = "";
     boolean navIsPremium = false;
     
     if (navUser != null) {
         navUserName = navUser.getFullName() != null ? navUser.getFullName() : "User";
         navAvatarLetter = navUserName.length() > 0 ? navUserName.substring(0, 1).toUpperCase() : "U";
         navIsPremium = navUser.hasPremiumAccess();
+        navEmail = navUser.getEmail() != null ? navUser.getEmail() : "";
+        navUsername = navUser.getUsername() != null ? navUser.getUsername() : "";
     }
 %>
 
@@ -82,8 +86,8 @@
                     <% } %>
                 </a>
                 
-                <!-- User Profile -->
-                <div class="user-profile">
+                <!-- User Profile with Dropdown -->
+                <div class="user-profile" id="userProfileBtn" onclick="toggleUserDropdown(event)">
                     <div class="user-avatar <%= navIsPremium ? "premium" : "" %>">
                         <span class="avatar-letter"><%= navAvatarLetter %></span>
                         <% if (navIsPremium) { %>
@@ -94,12 +98,28 @@
                         <span class="user-name"><%= navUserName %></span>
                         <span class="user-role"><%= navIsPremium ? "Premium Member" : "Free Member" %></span>
                     </div>
+                    <span class="dropdown-arrow" id="dropdownArrow">▾</span>
                 </div>
                 
-                <!-- Logout Button -->
-                <a href="logout" class="logout-btn" title="Đăng xuất">
-                    <span class="logout-icon">🚪</span>
-                </a>
+                <!-- User Dropdown Menu -->
+                <div class="user-dropdown" id="userDropdown">
+                    <div class="dropdown-header">
+                        <div class="dropdown-avatar <%= navIsPremium ? "premium" : "" %>">
+                            <span><%= navAvatarLetter %></span>
+                        </div>
+                        <div class="dropdown-user-info">
+                            <span class="dropdown-name"><%= navUserName %></span>
+                            <span class="dropdown-email"><%= navEmail %></span>
+                        </div>
+                    </div>
+                    <div class="dropdown-divider"></div>
+                    <a href="profile" class="dropdown-item-link">
+                        <span>📝</span> Thông tin hồ sơ
+                    </a>
+                    <a href="logout" class="dropdown-logout">
+                        <span>🚪</span> Đăng xuất
+                    </a>
+                </div>
             </div>
         </div>
     </div>
@@ -290,10 +310,22 @@
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.1);
     transition: all 0.3s ease;
+    cursor: pointer;
+    position: relative;
+    user-select: none;
 }
 .user-profile:hover {
     background: rgba(255, 255, 255, 0.1);
     border-color: rgba(255, 255, 255, 0.2);
+}
+
+.dropdown-arrow {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.8rem;
+    transition: transform 0.3s ease;
+}
+.dropdown-arrow.open {
+    transform: rotate(180deg);
 }
 
 .user-avatar {
@@ -356,26 +388,143 @@
     color: rgba(255, 255, 255, 0.5);
 }
 
-/* Logout Button */
-.logout-btn {
+/* ===== User Dropdown ===== */
+.navbar-right {
+    position: relative;
+}
+.user-dropdown {
+    position: absolute;
+    top: calc(100% + 12px);
+    right: 0;
+    width: 300px;
+    background: rgba(26, 26, 46, 0.98);
+    backdrop-filter: blur(25px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 16px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 2000;
+    overflow: hidden;
+}
+.user-dropdown.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.dropdown-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.2rem 1.2rem 1rem;
+}
+.dropdown-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #ff6b6b, #ee5a5a);
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 40px;
-    height: 40px;
-    border-radius: 12px;
-    background: rgba(244, 67, 54, 0.1);
-    border: 1px solid rgba(244, 67, 54, 0.3);
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: white;
+    flex-shrink: 0;
+}
+.dropdown-avatar.premium {
+    background: linear-gradient(135deg, #ffd700, #ffb700);
+    color: #1a1a2e;
+}
+.dropdown-user-info {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+.dropdown-name {
+    font-size: 1rem;
+    font-weight: 600;
+    color: white;
+    line-height: 1.3;
+}
+.dropdown-email {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.5);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.dropdown-divider {
+    height: 1px;
+    background: rgba(255, 255, 255, 0.08);
+    margin: 0 1rem;
+}
+
+.dropdown-items {
+    padding: 0.6rem 0;
+}
+.dropdown-info-item {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 0.6rem 1.2rem;
+}
+.dropdown-icon {
+    font-size: 1rem;
+    width: 24px;
+    text-align: center;
+    flex-shrink: 0;
+}
+.dropdown-label {
+    display: block;
+    font-size: 0.7rem;
+    color: rgba(255, 255, 255, 0.4);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.dropdown-value {
+    display: block;
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.9);
+    font-weight: 500;
+}
+.dropdown-value.premium-text {
+    color: #ffd700;
+}
+
+.dropdown-item-link {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 0.8rem 1.2rem;
+    color: rgba(255, 255, 255, 0.85);
     text-decoration: none;
-    transition: all 0.3s ease;
+    font-weight: 500;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
 }
-.logout-btn:hover {
-    background: rgba(244, 67, 54, 0.2);
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(244, 67, 54, 0.2);
+.dropdown-item-link:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: white;
 }
-.logout-icon {
-    font-size: 1.1rem;
+
+.dropdown-logout {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 0.9rem 1.2rem;
+    color: #f44336;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+}
+.dropdown-logout:hover {
+    background: rgba(244, 67, 54, 0.1);
+    color: #ff6659;
 }
 
 /* Mobile Responsive */
@@ -436,11 +585,18 @@
     .user-info {
         display: none;
     }
-    .logout-btn {
+    .user-dropdown {
+        position: fixed;
+        top: auto;
+        bottom: 0;
+        left: 0;
+        right: 0;
         width: 100%;
-        border-radius: 12px;
-        height: auto;
-        padding: 1rem;
+        border-radius: 16px 16px 0 0;
+        transform: translateY(100%);
+    }
+    .user-dropdown.show {
+        transform: translateY(0);
     }
 }
 
@@ -461,6 +617,26 @@ document.addEventListener('DOMContentLoaded', function() {
             menu.classList.toggle('active');
             toggle.classList.toggle('active');
         });
+    }
+});
+
+// User dropdown toggle
+function toggleUserDropdown(e) {
+    e.stopPropagation();
+    const dropdown = document.getElementById('userDropdown');
+    const arrow = document.getElementById('dropdownArrow');
+    dropdown.classList.toggle('show');
+    arrow.classList.toggle('open');
+}
+
+// Close dropdown when clicking outside
+document.addEventListener('click', function(e) {
+    const dropdown = document.getElementById('userDropdown');
+    const profileBtn = document.getElementById('userProfileBtn');
+    const arrow = document.getElementById('dropdownArrow');
+    if (dropdown && !profileBtn.contains(e.target) && !dropdown.contains(e.target)) {
+        dropdown.classList.remove('show');
+        arrow.classList.remove('open');
     }
 });
 </script>
