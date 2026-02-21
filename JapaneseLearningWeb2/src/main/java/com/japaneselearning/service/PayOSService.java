@@ -1,6 +1,6 @@
 package com.japaneselearning.service;
 
-import com.japaneselearning.model.Payment;
+
 import vn.payos.PayOS;
 import vn.payos.type.CheckoutResponseData;
 import vn.payos.type.ItemData;
@@ -105,13 +105,7 @@ public class PayOSService {
                 cancelUrl = prop.getProperty("payos.cancelUrl", "http://localhost:9999/JapaneseLearningWeb/paymentCancel").trim();
             }
             
-            System.out.println("Loaded PayOS Config:");
-            System.out.println("- ClientID: " + clientId.substring(0, 5) + "...");
-            System.out.println("- API Key: " + apiKey.substring(0, 5) + "...");
-            System.out.println("- Checksum: " + checksumKey.substring(0, 5) + "...");
-            System.out.println("- Return URL: " + returnUrl);
-            System.out.println("- Cancel URL: " + cancelUrl);
-            
+            System.out.println("Loaded PayOS Config - Return URL: " + returnUrl);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -151,12 +145,6 @@ public class PayOSService {
      */
     public String createPaymentLinkUrl(long orderCode, int amount, String description) {
         try {
-            System.out.println("=== PayOS Create Payment Link ===");
-            System.out.println("OrderCode: " + orderCode);
-            System.out.println("Amount: " + amount);
-            System.out.println("Description: " + description);
-            System.out.println("ReturnUrl: " + returnUrl);
-            System.out.println("CancelUrl: " + cancelUrl);
             
             if (payOS == null) {
                 System.err.println("PayOS client is NULL!");
@@ -172,7 +160,6 @@ public class PayOSService {
             // Use direct API call to bypass SDK signature verification issue
             String checkoutUrl = createPaymentLinkDirect(orderCode, amount, finalDescription);
             if (checkoutUrl != null) {
-                System.out.println("Payment link created successfully: " + checkoutUrl);
                 return checkoutUrl;
             }
             
@@ -236,10 +223,7 @@ public class PayOSService {
             items.add(item);
             requestBody.add("items", items);
             
-            System.out.println("Direct API Request: " + requestBody.toString());
-            System.out.println("Signature Data: " + signatureData);
-            System.out.println("Generated Signature: " + signature);
-            
+
             // Make HTTP request
             URL url = new URL(apiUrl);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -255,7 +239,6 @@ public class PayOSService {
             }
             
             int responseCode = conn.getResponseCode();
-            System.out.println("PayOS API Response Code: " + responseCode);
             
             // Read response
             BufferedReader br;
@@ -272,8 +255,7 @@ public class PayOSService {
             }
             br.close();
             
-            System.out.println("PayOS API Response: " + response.toString());
-            
+
             if (responseCode >= 200 && responseCode < 300) {
                 // Parse response to get checkoutUrl
                 Gson gson = new Gson();

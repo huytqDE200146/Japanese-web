@@ -1,4 +1,4 @@
-package com.japaneselearning.model ;
+package com.japaneselearning.model;
 
 import java.sql.Timestamp;
 

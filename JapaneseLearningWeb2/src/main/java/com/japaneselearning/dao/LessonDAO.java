@@ -1,6 +1,5 @@
 package com.japaneselearning.dao;
 
-
 import com.japaneselearning.model.Lesson;
 import com.japaneselearning.utils.DBConnection;
 import java.sql.Connection;
@@ -11,7 +10,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
 
 public class LessonDAO {
 

@@ -21,7 +21,6 @@ import java.util.Collections;
 @WebServlet("/google-login")
 public class GoogleLoginServlet extends HttpServlet {
 
-    // TODO: Thay bằng Google Client ID của bạn từ Google Cloud Console
     private static final String GOOGLE_CLIENT_ID = "912023989681-0fehc1j8pvssrm274qgetn523c92aik9.apps.googleusercontent.com";
 
     @Override
