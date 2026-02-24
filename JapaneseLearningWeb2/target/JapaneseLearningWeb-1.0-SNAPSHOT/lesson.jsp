@@ -183,9 +183,15 @@
         /* Lessons List */
         .lessons-container {
             padding: 0.75rem;
-            max-height: 280px;
+            max-height: 400px;
             overflow-y: auto;
             flex-grow: 1;
+            transition: max-height 0.4s ease, padding 0.4s ease;
+        }
+        .category-card.collapsed .lessons-container {
+            max-height: 0;
+            padding: 0 0.75rem;
+            overflow: hidden;
         }
         .lessons-container::-webkit-scrollbar {
             width: 4px;
@@ -308,28 +314,10 @@
 
 <body>
 
-<!-- ===== NAVBAR ===== -->
-<nav class="navbar navbar-expand-lg">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="home.jsp">日本語学習</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <li class="nav-item"><a class="nav-link" href="home.jsp">🏠 Home</a></li>
-                <li class="nav-item"><a class="nav-link active" href="lessons">📚 Courses</a></li>
-                <li class="nav-item"><a class="nav-link" href="quiz.jsp">✍️ Quiz</a></li>
-                <li class="nav-item"><a class="nav-link" href="process.jsp">📊 Progress</a></li>
-                <li class="nav-item"><a class="nav-link" href="ai-chat.jsp">🤖 AI Chat</a></li>
-            </ul>
-            <span class="navbar-text me-3">
-                こんにちは、<strong><%= user.getFullName() %></strong> さん
-            </span>
-            <a href="logout" class="btn-logout">Logout</a>
-        </div>
-    </div>
-</nav>
+<!-- ===== NAVBAR (Component) ===== -->
+<jsp:include page="components/navbar.jsp">
+    <jsp:param name="activePage" value="courses" />
+</jsp:include>
 
 <!-- ===== MAIN CONTENT ===== -->
 <main class="main-container">
@@ -388,7 +376,7 @@
             String gradient = categoryGradients.getOrDefault(category, "gradient-default");
             catIndex++;
         %>
-        <div class="category-card animate-fade-in" id="cat-<%= catIndex %>">
+        <div class="category-card animate-fade-in collapsed" id="cat-<%= catIndex %>">
             <div class="category-card-header" onclick="toggleCategory(<%= catIndex %>)">
                 <div class="category-icon-box <%= gradient %>"><%= icon %></div>
                 <div class="category-info">
@@ -433,19 +421,7 @@
 <script>
     function toggleCategory(id) {
         const card = document.getElementById('cat-' + id);
-        const container = document.getElementById('lessons-' + id);
-        
         card.classList.toggle('collapsed');
-        
-        if (card.classList.contains('collapsed')) {
-            container.style.maxHeight = '0';
-            container.style.padding = '0 1rem';
-            container.style.overflow = 'hidden';
-        } else {
-            container.style.maxHeight = '400px';
-            container.style.padding = '1rem';
-            container.style.overflow = 'auto';
-        }
     }
 </script>
 </body>

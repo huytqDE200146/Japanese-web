@@ -158,6 +158,33 @@ body::before {
     box-shadow: 0 4px 15px rgba(0,0,0,0.2);
 }
 
+/* ===== Password Toggle ===== */
+.password-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.password-wrapper input {
+    padding-right: 48px;
+}
+
+.toggle-password {
+    position: absolute;
+    right: 10px;
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 4px 6px;
+    line-height: 1;
+    opacity: 0.6;
+    transition: opacity 0.2s ease;
+}
+
+.toggle-password:hover {
+    opacity: 1;
+}
 /* Button */
 .btn-login {
     width: 100%;
@@ -200,4 +227,134 @@ body::before {
     border: 1px solid #ffcdd2;
     font-size: 0.9rem;
     font-weight: 500;
+}
+
+/* ===== Divider ===== */
+.divider {
+    display: flex;
+    align-items: center;
+    margin: 24px 0 20px;
+    gap: 12px;
+}
+
+.divider::before,
+.divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.35);
+}
+
+.divider span {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.85rem;
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    white-space: nowrap;
+}
+
+/* ===== Google Login Button ===== */
+.btn-google {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.92);
+    color: #3c4043;
+    font-size: 1rem;
+    font-weight: 600;
+    font-family: 'Poppins', sans-serif;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+}
+
+.btn-google:hover {
+    background: #ffffff;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+}
+
+.btn-google:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.btn-google svg {
+    flex-shrink: 0;
+}
+
+/* ===== Register Card ===== */
+.register-card {
+    max-width: 450px;
+}
+
+.btn-register {
+    background: linear-gradient(135deg, var(--primary-red) 0%, #e6003b 100%);
+    box-shadow: 0 4px 15px rgba(188, 0, 45, 0.4);
+}
+
+.btn-register:hover {
+    background: linear-gradient(135deg, #a30027 0%, #c9002f 100%);
+}
+
+/* ===== Switch Form Link ===== */
+.switch-form {
+    margin-top: 20px;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.9rem;
+}
+
+.switch-form a {
+    color: #fff;
+    font-weight: 600;
+    text-decoration: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+    transition: all 0.3s ease;
+}
+
+.switch-form a:hover {
+    border-bottom-color: #fff;
+    text-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+}
+
+/* ===== Success Alert ===== */
+.alert-success {
+    background: rgba(232, 245, 233, 0.95);
+    color: #2e7d32;
+    padding: 12px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    border: 1px solid #a5d6a7;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+/* ===== Remember Me Checkbox ===== */
+.remember-group {
+    margin-bottom: 16px;
+    text-align: left;
+}
+
+.remember-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.9rem;
+    cursor: pointer;
+    user-select: none;
+}
+
+.remember-label input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--primary-red);
+    cursor: pointer;
+    border-radius: 4px;
 }

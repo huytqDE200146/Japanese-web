@@ -27,42 +27,10 @@
 
 <body>
 
-<!-- ===== NAVBAR ===== -->
-<nav class="navbar navbar-expand-lg">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="home.jsp">日本語学習</a>
-
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <li class="nav-item">
-                    <a class="nav-link active" href="home.jsp">🏠 Home</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="lessons">📚 Courses</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="quiz.jsp">✍️ Quiz</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="process.jsp">📊 Progress</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="ai-chat.jsp">🤖 AI Chat</a>
-                </li>
-            </ul>
-
-            <span class="navbar-text me-3">
-                こんにちは、<strong><%= user.getFullName() %></strong> さん
-            </span>
-
-            <a href="logout" class="btn-logout">Logout</a>
-        </div>
-    </div>
-</nav>
+<!-- ===== NAVBAR (Component) ===== -->
+<jsp:include page="components/navbar.jsp">
+    <jsp:param name="activePage" value="home" />
+</jsp:include>
 
 <!-- ===== MAIN CONTENT ===== -->
 <main class="main-container">

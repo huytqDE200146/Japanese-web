@@ -12,6 +12,9 @@ public class User {
     private String role;
     private String status;
     private Timestamp createdAt;
+    private boolean isPremium;
+    private Timestamp premiumUntil;
+    private String googleId;
 
     // Constructor rỗng (bắt buộc cho Servlet/JSP)
     public User() {
@@ -103,5 +106,36 @@ public class User {
 
     public void setCreatedAt(Timestamp createdAt) {
         this.createdAt = createdAt;
+    }
+    
+    public boolean isPremium() {
+        return isPremium;
+    }
+    
+    public void setPremium(boolean isPremium) {
+        this.isPremium = isPremium;
+    }
+    
+    public Timestamp getPremiumUntil() {
+        return premiumUntil;
+    }
+    
+    public void setPremiumUntil(Timestamp premiumUntil) {
+        this.premiumUntil = premiumUntil;
+    }
+    
+    public String getGoogleId() {
+        return googleId;
+    }
+    
+    public void setGoogleId(String googleId) {
+        this.googleId = googleId;
+    }
+    
+    // Helper method to check if Premium is still active
+    public boolean hasPremiumAccess() {
+        if (!isPremium) return false;
+        if (premiumUntil == null) return false;
+        return premiumUntil.after(new Timestamp(System.currentTimeMillis()));
     }
 }
