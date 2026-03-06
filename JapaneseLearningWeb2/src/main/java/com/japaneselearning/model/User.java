@@ -9,6 +9,7 @@ public class User {
     private String password;
     private String email;
     private String fullName;
+    private int level;
     private String role;
     private String status;
     private Timestamp createdAt;
@@ -22,7 +23,7 @@ public class User {
 
     // Constructor đầy đủ
     public User(int id, String username, String password, String email,
-                String fullName, String role, String status, Timestamp createdAt) {
+                String fullName, int level, String role, String status, Timestamp createdAt) {
         this.id = id;
         this.username = username;
         this.password = password;
@@ -82,6 +83,14 @@ public class User {
 
     public void setFullName(String fullName) {
         this.fullName = fullName;
+    }
+    
+    public int getLevel() {
+        return level;
+    }
+
+    public void setLevel(int level) {
+        this.level = level;
     }
 
     public String getRole() {

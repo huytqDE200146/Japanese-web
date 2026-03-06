@@ -54,13 +54,13 @@
                     </a>
                 </li>
                 <li>
-                    <a href="quiz.jsp" class="nav-link <%= "quiz".equals(currentPage) ? "active" : "" %>">
+                    <a href="quiz" class="nav-link <%= "quiz".equals(currentPage) ? "active" : "" %>">
                         <span class="nav-icon">✍️</span>
                         <span class="nav-text">Quiz</span>
                     </a>
                 </li>
                 <li>
-                    <a href="process.jsp" class="nav-link <%= "progress".equals(currentPage) ? "active" : "" %>">
+                    <a href="progress.jsp" class="nav-link <%= "progress".equals(currentPage) ? "active" : "" %>">
                         <span class="nav-icon">📊</span>
                         <span class="nav-text">Progress</span>
                     </a>

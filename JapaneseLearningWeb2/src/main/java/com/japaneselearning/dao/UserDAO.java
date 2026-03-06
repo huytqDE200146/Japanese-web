@@ -11,8 +11,8 @@ public class UserDAO {
 
     // Đăng ký
     public boolean register(User user) {
-        String sql = "INSERT INTO users(username, password, email, full_name, role, status) "
-                   + "VALUES (?, ?, ?, ?, 'USER', 'ACTIVE')";
+        String sql = "INSERT INTO users(username, password, email, full_name, level, role, status) "
+                   + "VALUES (?, ?, ?, ?,5, 'USER', 'ACTIVE')";
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -68,8 +68,8 @@ public class UserDAO {
 
     // Đăng ký user từ Google (không có password)
     public User registerGoogleUser(String googleId, String email, String fullName) {
-        String sql = "INSERT INTO users(username, password, email, full_name, role, status, google_id) "
-                   + "VALUES (?, '', ?, ?, 'USER', 'ACTIVE', ?)";
+        String sql = "INSERT INTO users(username, password, email, full_name, level, role, status, google_id) "
+                   + "VALUES (?, '', ?, ?,5, 'USER', 'ACTIVE', ?)";
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
@@ -191,6 +191,7 @@ public class UserDAO {
         u.setUsername(rs.getString("username"));
         u.setEmail(rs.getString("email"));
         u.setFullName(rs.getString("full_name"));
+        u.setLevel(rs.getInt("level"));
         u.setRole(rs.getString("role"));
         u.setStatus(rs.getString("status"));
         u.setCreatedAt(rs.getTimestamp("created_at"));
@@ -213,5 +214,125 @@ public class UserDAO {
         }
         
         return u;
+    }
+
+    // --- ADMIN METHODS ---
+
+    /**
+     * Get all users for admin panel
+     */
+    public java.util.List<User> getAllUsers() {
+        java.util.List<User> list = new java.util.ArrayList<>();
+        String sql = "SELECT * FROM users ORDER BY id DESC";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                list.add(mapResultSetToUser(rs));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    /**
+     * Update user role (ADMIN/USER)
+     */
+    public boolean updateUserRole(int userId, String role) {
+        String sql = "UPDATE users SET role=? WHERE id=?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, role);
+            ps.setInt(2, userId);
+            return ps.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    /**
+     * Update user status (ACTIVE/BAN)
+     */
+    public boolean updateUserStatus(int userId, String status) {
+        String sql = "UPDATE users SET status=? WHERE id=?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, status);
+            ps.setInt(2, userId);
+            return ps.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    /**
+     * Update premium status for a user (Admin toggle)
+     * @param userId ID of the user
+     * @param isPremium true to grant, false to revoke
+     * @param days number of premium days to add (only used when isPremium=true)
+     */
+    public boolean updatePremiumStatus(int userId, boolean isPremium, int days) {
+        String sql;
+        if (isPremium) {
+            sql = "UPDATE users SET is_premium = 1, premium_until = DATEADD(day, ?, GETDATE()) WHERE id = ?";
+        } else {
+            sql = "UPDATE users SET is_premium = 0, premium_until = NULL WHERE id = ?";
+        }
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            if (isPremium) {
+                ps.setInt(1, days);
+                ps.setInt(2, userId);
+            } else {
+                ps.setInt(1, userId);
+            }
+            return ps.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    /**
+     * Get total number of users
+     */
+    public int getTotalUsers() {
+        String sql = "SELECT COUNT(*) FROM users";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    /**
+     * Xoá user (xoá payments trước do foreign key)
+     */
+    public boolean deleteUser(int userId) {
+        String deletePayments = "DELETE FROM payments WHERE user_id = ?";
+        String deleteUser = "DELETE FROM users WHERE user_id = ?";
+        try (Connection conn = DBConnection.getConnection()) {
+            // Xoá payments liên quan
+            try (PreparedStatement ps = conn.prepareStatement(deletePayments)) {
+                ps.setInt(1, userId);
+                ps.executeUpdate();
+            }
+            // Xoá user
+            try (PreparedStatement ps = conn.prepareStatement(deleteUser)) {
+                ps.setInt(1, userId);
+                return ps.executeUpdate() > 0;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 }

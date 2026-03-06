@@ -554,9 +554,9 @@
                     <div class="sidebar-card animate-fade-in">
                         <h3 class="sidebar-title">⚡ Liên kết nhanh</h3>
                         <div class="quick-links">
-                            <a href="quiz.jsp" class="quick-link">
-                                <span class="quick-link-icon">✍️</span>
-                                <span class="quick-link-text">Làm Quiz</span>
+                            <a href="javascript:void(0)" class="quick-link" onclick="openAiQuizModal()">
+                                <span class="quick-link-icon">🤖</span>
+                                <span class="quick-link-text">Quiz AI</span>
                             </a>
                             <a href="ai-chat.jsp" class="quick-link">
                                 <span class="quick-link-icon">🤖</span>
@@ -737,5 +737,255 @@
                 };
             }
         </script>
+
+<!-- ===== AI QUIZ MODAL ===== -->
+<% if (lesson != null) { %>
+<div id="aiQuizOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.8);backdrop-filter:blur(10px);z-index:9999;overflow-y:auto;padding:2rem;">
+<div style="max-width:750px;margin:0 auto;">
+
+    <!-- Config Panel -->
+    <div id="aiQuizConfig" class="sidebar-card" style="text-align:center;padding:2.5rem;">
+        <h2 style="font-family:'Noto Serif JP',serif;margin-bottom:0.5rem;">🤖 Tạo Quiz AI</h2>
+        <p style="color:var(--muted-text);margin-bottom:1.5rem;">AI sẽ tạo quiz từ nội dung bài "<%= lesson.getDescription() %>"</p>
+        <div style="margin-bottom:1.5rem;">
+            <label style="display:block;margin-bottom:0.5rem;color:var(--sakura-pink);font-weight:600;">Số câu hỏi</label>
+            <div style="display:flex;gap:1rem;justify-content:center;">
+                <button class="ai-q-btn active" onclick="selectNum(this,5)">5 câu</button>
+                <button class="ai-q-btn" onclick="selectNum(this,10)">10 câu</button>
+                <button class="ai-q-btn" onclick="selectNum(this,15)">15 câu</button>
+            </div>
+        </div>
+        <button onclick="generateAiQuiz()" style="background:var(--gradient-primary);color:white;border:none;padding:0.8rem 2.5rem;border-radius:30px;font-size:1.1rem;font-weight:600;cursor:pointer;transition:all 0.3s;">✨ Tạo Quiz</button>
+        <br><button onclick="closeAiQuiz()" style="background:transparent;border:1px solid rgba(255,255,255,0.2);color:white;padding:0.5rem 1.5rem;border-radius:20px;margin-top:1rem;cursor:pointer;">✕ Đóng</button>
+    </div>
+
+    <!-- Loading -->
+    <div id="aiQuizLoading" style="display:none;text-align:center;padding:3rem;">
+        <div style="font-size:3rem;animation:spin 1s linear infinite;display:inline-block;">🔄</div>
+        <p style="margin-top:1rem;color:var(--sakura-pink);font-size:1.1rem;">AI đang tạo quiz...</p>
+        <p style="color:var(--muted-text);font-size:0.85rem;">Vui lòng đợi 5-10 giây</p>
+    </div>
+
+    <!-- Quiz Area -->
+    <div id="aiQuizPlay" style="display:none;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+            <span id="aiCatLabel" style="font-family:'Noto Serif JP',serif;color:var(--sakura-pink);font-size:1rem;">Quiz AI</span>
+            <span id="aiTimer" style="font-size:1.3rem;font-weight:700;color:white;">0:00</span>
+        </div>
+        <div style="height:8px;background:rgba(255,255,255,0.1);border-radius:4px;margin-bottom:0.5rem;overflow:hidden;">
+            <div id="aiProgressBar" style="height:100%;background:linear-gradient(90deg,#4ade80,#16a34a);border-radius:4px;transition:width 0.5s;width:0%;"></div>
+        </div>
+        <div id="aiCounter" style="color:var(--muted-text);font-size:0.85rem;margin-bottom:1.5rem;">Câu 1 / 5</div>
+        <div class="sidebar-card" style="padding:2.5rem;text-align:center;">
+            <div id="aiQuestionText" style="font-family:'Noto Serif JP',serif;font-size:1.5rem;color:white;margin-bottom:1.5rem;"></div>
+            <div id="aiOptionsGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;"></div>
+            <div id="aiFeedback" style="margin-top:1.5rem;font-size:1.1rem;font-weight:600;min-height:1.5rem;"></div>
+        </div>
+    </div>
+
+    <!-- Results -->
+    <div id="aiQuizResult" style="display:none;">
+        <div class="sidebar-card" style="padding:2.5rem;text-align:center;">
+            <div id="aiResultScore" style="font-size:4rem;font-weight:700;background:linear-gradient(135deg,#4ade80,#fbbf24);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">80%</div>
+            <div id="aiResultGrade" style="font-family:'Noto Serif JP',serif;font-size:1.3rem;margin-bottom:1.5rem;"></div>
+            <div style="display:flex;justify-content:center;gap:2rem;margin-bottom:1.5rem;">
+                <div style="text-align:center;"><span id="aiCorrect" style="font-size:2rem;font-weight:700;color:#4ade80;display:block;">0</span><span style="font-size:0.8rem;color:var(--muted-text);">Đúng</span></div>
+                <div style="text-align:center;"><span id="aiWrong" style="font-size:2rem;font-weight:700;color:#f87171;display:block;">0</span><span style="font-size:0.8rem;color:var(--muted-text);">Sai</span></div>
+                <div style="text-align:center;"><span id="aiTime" style="font-size:2rem;font-weight:700;color:#fbbf24;display:block;">0:00</span><span style="font-size:0.8rem;color:var(--muted-text);">Thời gian</span></div>
+            </div>
+            <div style="display:flex;justify-content:center;gap:1rem;flex-wrap:wrap;">
+                <button onclick="generateAiQuiz()" style="background:var(--gradient-primary);color:white;border:none;padding:0.7rem 2rem;border-radius:30px;font-weight:600;cursor:pointer;">🔄 Tạo quiz mới</button>
+                <button onclick="closeAiQuiz()" style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:white;padding:0.7rem 2rem;border-radius:30px;font-weight:600;cursor:pointer;">✕ Đóng</button>
+            </div>
+            <div id="aiWrongList" style="margin-top:1.5rem;text-align:left;"></div>
+        </div>
+    </div>
+</div>
+</div>
+<% } %>
+
+<style>
+@keyframes spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+.ai-q-btn { background:rgba(255,255,255,0.05); border:2px solid rgba(255,255,255,0.15); color:white; padding:0.6rem 1.5rem; border-radius:12px; cursor:pointer; font-size:1rem; transition:all 0.3s; }
+.ai-q-btn:hover { border-color:var(--sakura-pink); background:rgba(255,255,255,0.1); }
+.ai-q-btn.active { background:rgba(188,0,45,0.3); border-color:var(--primary-red); color:var(--sakura-pink); }
+.ai-opt-btn { background:rgba(255,255,255,0.05); border:2px solid rgba(255,255,255,0.15); border-radius:14px; padding:1rem; color:white; font-size:1rem; cursor:pointer; transition:all 0.3s; text-align:left; }
+.ai-opt-btn:hover:not(.disabled) { background:rgba(255,255,255,0.1); border-color:var(--sakura-pink); transform:translateY(-2px); }
+.ai-opt-btn.correct { background:rgba(74,222,128,0.2); border-color:#4ade80; color:#4ade80; }
+.ai-opt-btn.wrong { background:rgba(248,113,113,0.2); border-color:#f87171; color:#f87171; }
+.ai-opt-btn.disabled { cursor:default; opacity:0.6; }
+.ai-opt-btn.show-correct { border-color:#4ade80; background:rgba(74,222,128,0.1); }
+</style>
+
+<script>
+let aiNumQ = 5;
+let aiQuestions = [];
+let aiIndex = 0;
+let aiScore = 0;
+let aiWrongItems = [];
+let aiTimerInterval = null;
+let aiSeconds = 0;
+let aiAnswered = false;
+
+function selectNum(btn, n) {
+    aiNumQ = n;
+    document.querySelectorAll('.ai-q-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+}
+
+function openAiQuizModal() {
+    document.getElementById('aiQuizOverlay').style.display = 'block';
+    document.getElementById('aiQuizConfig').style.display = 'block';
+    document.getElementById('aiQuizLoading').style.display = 'none';
+    document.getElementById('aiQuizPlay').style.display = 'none';
+    document.getElementById('aiQuizResult').style.display = 'none';
+    document.body.style.overflow = 'hidden';
+}
+
+function closeAiQuiz() {
+    document.getElementById('aiQuizOverlay').style.display = 'none';
+    document.body.style.overflow = '';
+    clearInterval(aiTimerInterval);
+}
+
+async function generateAiQuiz() {
+    document.getElementById('aiQuizConfig').style.display = 'none';
+    document.getElementById('aiQuizResult').style.display = 'none';
+    document.getElementById('aiQuizPlay').style.display = 'none';
+    document.getElementById('aiQuizLoading').style.display = 'block';
+
+    const contentEl = document.querySelector('.lesson-content-area');
+    const lessonContent = contentEl ? contentEl.innerText : '';
+
+    try {
+        const resp = await fetch('<%= request.getContextPath() %>/ai-quiz', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ lessonContent: lessonContent, numQuestions: aiNumQ })
+        });
+
+        if (!resp.ok) {
+            const err = await resp.json();
+            throw new Error(err.error || 'Server error');
+        }
+
+        aiQuestions = await resp.json();
+        aiIndex = 0;
+        aiScore = 0;
+        aiWrongItems = [];
+        aiSeconds = 0;
+        aiAnswered = false;
+
+        document.getElementById('aiQuizLoading').style.display = 'none';
+        document.getElementById('aiQuizPlay').style.display = 'block';
+
+        clearInterval(aiTimerInterval);
+        aiTimerInterval = setInterval(() => {
+            aiSeconds++;
+            const m = Math.floor(aiSeconds / 60);
+            const s = aiSeconds % 60;
+            document.getElementById('aiTimer').textContent = m + ':' + (s < 10 ? '0' : '') + s;
+        }, 1000);
+
+        showAiQuestion();
+
+    } catch (e) {
+        document.getElementById('aiQuizLoading').style.display = 'none';
+        document.getElementById('aiQuizConfig').style.display = 'block';
+        alert('Lỗi tạo quiz: ' + e.message);
+    }
+}
+
+function showAiQuestion() {
+    aiAnswered = false;
+    const q = aiQuestions[aiIndex];
+    const total = aiQuestions.length;
+
+    document.getElementById('aiQuestionText').textContent = q.question;
+    document.getElementById('aiCounter').textContent = 'Câu ' + (aiIndex + 1) + ' / ' + total;
+    document.getElementById('aiProgressBar').style.width = ((aiIndex / total) * 100) + '%';
+    document.getElementById('aiFeedback').textContent = '';
+    document.getElementById('aiFeedback').style.color = '';
+
+    const grid = document.getElementById('aiOptionsGrid');
+    grid.innerHTML = '';
+    q.options.forEach(opt => {
+        const btn = document.createElement('button');
+        btn.className = 'ai-opt-btn';
+        btn.textContent = opt;
+        btn.onclick = () => selectAiAnswer(btn, opt, q.answer);
+        grid.appendChild(btn);
+    });
+}
+
+function selectAiAnswer(btn, selected, correct) {
+    if (aiAnswered) return;
+    aiAnswered = true;
+
+    const allBtns = document.querySelectorAll('.ai-opt-btn');
+    allBtns.forEach(b => b.classList.add('disabled'));
+
+    if (selected === correct) {
+        btn.classList.add('correct');
+        aiScore++;
+        document.getElementById('aiFeedback').textContent = '✅ Chính xác!';
+        document.getElementById('aiFeedback').style.color = '#4ade80';
+    } else {
+        btn.classList.add('wrong');
+        aiWrongItems.push({ q: aiQuestions[aiIndex].question, yours: selected, correct: correct });
+        document.getElementById('aiFeedback').textContent = '❌ Sai! Đáp án: ' + correct;
+        document.getElementById('aiFeedback').style.color = '#f87171';
+        allBtns.forEach(b => { if (b.textContent === correct) b.classList.add('show-correct'); });
+    }
+
+    setTimeout(() => {
+        aiIndex++;
+        if (aiIndex < aiQuestions.length) {
+            showAiQuestion();
+        } else {
+            showAiResults();
+        }
+    }, 1500);
+}
+
+function showAiResults() {
+    clearInterval(aiTimerInterval);
+    document.getElementById('aiQuizPlay').style.display = 'none';
+    document.getElementById('aiQuizResult').style.display = 'block';
+
+    const total = aiQuestions.length;
+    const pct = Math.round((aiScore / total) * 100);
+    const m = Math.floor(aiSeconds / 60);
+    const s = aiSeconds % 60;
+
+    document.getElementById('aiResultScore').textContent = pct + '%';
+    document.getElementById('aiCorrect').textContent = aiScore;
+    document.getElementById('aiWrong').textContent = total - aiScore;
+    document.getElementById('aiTime').textContent = m + ':' + (s < 10 ? '0' : '') + s;
+
+    let grade = '';
+    if (pct === 100) grade = '🏆 Hoàn hảo! すごい!';
+    else if (pct >= 80) grade = '🌸 Giỏi lắm! よくできました!';
+    else if (pct >= 60) grade = '📖 Khá tốt! がんばりました!';
+    else if (pct >= 40) grade = '💪 Cần cố gắng! がんばって!';
+    else grade = '📚 Hãy ôn tập lại! もう一度!';
+    document.getElementById('aiResultGrade').textContent = grade;
+
+    const wrongDiv = document.getElementById('aiWrongList');
+    if (aiWrongItems.length > 0) {
+        let html = '<h4 style="font-family:\'Noto Serif JP\',serif;color:var(--sakura-pink);margin-bottom:1rem;">📝 Xem lại câu sai</h4>';
+        aiWrongItems.forEach(w => {
+            html += '<div style="background:rgba(248,113,113,0.08);border:1px solid rgba(248,113,113,0.2);border-radius:12px;padding:1rem;margin-bottom:0.75rem;">' +
+                '<div style="font-weight:600;color:white;margin-bottom:0.3rem;">' + w.q + '</div>' +
+                '<div style="color:#f87171;font-size:0.9rem;">❌ Bạn chọn: ' + w.yours + '</div>' +
+                '<div style="color:#4ade80;font-size:0.9rem;">✅ Đáp án: ' + w.correct + '</div></div>';
+        });
+        wrongDiv.innerHTML = html;
+    } else {
+        wrongDiv.innerHTML = '<p style="text-align:center;color:#4ade80;margin-top:1rem;">🎉 Bạn trả lời đúng tất cả!</p>';
+    }
+}
+</script>
+
     </body>
 </html>

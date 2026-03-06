@@ -40,6 +40,37 @@ public class PaymentDAO {
         }
         return -1;
     }
+
+    /**
+     * Tạo payment record đã thanh toán (dùng khi Admin cấp Premium)
+     * Insert luôn paid_at và payment_method
+     */
+    public int createPaidPayment(int userId, int amount, String description, String paymentMethod) {
+        String sql = "INSERT INTO payments (user_id, order_code, amount, description, status, checkout_url, payment_method, paid_at) " +
+                     "VALUES (?, ?, ?, ?, 'PAID', '', ?, GETDATE())";
+        
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            
+            ps.setInt(1, userId);
+            ps.setLong(2, System.currentTimeMillis());
+            ps.setInt(3, amount);
+            ps.setString(4, description);
+            ps.setString(5, paymentMethod);
+            
+            int affected = ps.executeUpdate();
+            if (affected > 0) {
+                try (ResultSet rs = ps.getGeneratedKeys()) {
+                    if (rs.next()) {
+                        return rs.getInt(1);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return -1;
+    }
     
     /**
      * Tìm payment theo order code
@@ -123,5 +154,77 @@ public class PaymentDAO {
         payment.setCreatedAt(rs.getTimestamp("created_at"));
         payment.setPaidAt(rs.getTimestamp("paid_at"));
         return payment;
+    }
+
+    // --- ADMIN METHODS ---
+
+    /**
+     * Get all payments for admin panel
+     */
+    public List<Payment> getAllPayments() {
+        List<Payment> payments = new ArrayList<>();
+        String sql = "SELECT * FROM payments ORDER BY created_at DESC";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                payments.add(mapResultSetToPayment(rs));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return payments;
+    }
+
+    /**
+     * Get total revenue (only PAID status)
+     */
+    public long getTotalPaymentsAmount() {
+        String sql = "SELECT SUM(amount) FROM payments WHERE status = 'PAID'";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                return rs.getLong(1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    /**
+     * Get monthly revenue for the last 6 months (for chart)
+     * Returns LinkedHashMap with month label -> total amount
+     */
+    public java.util.LinkedHashMap<String, Long> getMonthlyRevenue() {
+        java.util.LinkedHashMap<String, Long> monthlyData = new java.util.LinkedHashMap<>();
+        String sql = "SELECT FORMAT(paid_at, 'MM/yyyy') AS month_label, SUM(amount) AS total " +
+                     "FROM payments WHERE status = 'PAID' AND paid_at >= DATEADD(month, -5, DATEADD(month, DATEDIFF(month, 0, GETDATE()), 0)) " +
+                     "GROUP BY FORMAT(paid_at, 'MM/yyyy'), YEAR(paid_at), MONTH(paid_at) " +
+                     "ORDER BY YEAR(paid_at), MONTH(paid_at)";
+        
+        // Initialize last 6 months with 0
+        java.time.LocalDate now = java.time.LocalDate.now();
+        for (int i = 5; i >= 0; i--) {
+            java.time.LocalDate m = now.minusMonths(i);
+            String label = String.format("%02d/%d", m.getMonthValue(), m.getYear());
+            monthlyData.put(label, 0L);
+        }
+        
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                String label = rs.getString("month_label");
+                long total = rs.getLong("total");
+                if (monthlyData.containsKey(label)) {
+                    monthlyData.put(label, total);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return monthlyData;
     }
 }

@@ -292,6 +292,10 @@
                 <span class="info-value"><%= profileUser.getRole() %></span>
             </div>
             <div class="info-row">
+                <span class="info-label">Cấp độ</span>
+                <span class="info-value"><%= profileUser.getLevel() %></span>
+            </div>
+            <div class="info-row">
                 <span class="info-label">Trạng thái</span>
                 <span class="info-value" style="color: #4caf50;"><%= profileUser.getStatus() %></span>
             </div>

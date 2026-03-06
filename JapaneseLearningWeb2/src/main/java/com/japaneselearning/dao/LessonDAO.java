@@ -107,4 +107,75 @@ public class LessonDAO {
         l.setCreatedAt(rs.getTimestamp("created_at"));
         return l;
     }
+
+    // --- ADMIN METHODS ---
+
+    /**
+     * Add a new lesson
+     */
+    public boolean addLesson(Lesson lesson) {
+        String sql = "INSERT INTO lesson (name, level, description, content_path) VALUES (?, ?, ?, ?)";
+        try (Connection con = DBConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, lesson.getName());
+            ps.setString(2, lesson.getLevel());
+            ps.setString(3, lesson.getDescription());
+            ps.setString(4, lesson.getContentPath());
+            return ps.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    /**
+     * Update an existing lesson
+     */
+    public boolean updateLesson(Lesson lesson) {
+        String sql = "UPDATE lesson SET name=?, level=?, description=?, content_path=? WHERE lesson_id=?";
+        try (Connection con = DBConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, lesson.getName());
+            ps.setString(2, lesson.getLevel());
+            ps.setString(3, lesson.getDescription());
+            ps.setString(4, lesson.getContentPath());
+            ps.setInt(5, lesson.getLessonId());
+            return ps.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    /**
+     * Delete a lesson
+     */
+    public boolean deleteLesson(int lessonId) {
+        String sql = "DELETE FROM lesson WHERE lesson_id=?";
+        try (Connection con = DBConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, lessonId);
+            return ps.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    /**
+     * Get total number of lessons
+     */
+    public int getTotalLessons() {
+        String sql = "SELECT COUNT(*) FROM lesson";
+        try (Connection con = DBConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
 }

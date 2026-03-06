@@ -1,8 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
-<%@ page import="java.util.List" %>
-<%@ page import="java.util.Map" %>
-<%@ page import="com.japaneselearning.model.Lesson" %>
-<%@ page import="com.japaneselearning.model.User" %>
+<%@ page import="java.util.*" %>
+<%@ page import="com.japaneselearning.model.*" %>
 
 <%
     User user = (User) session.getAttribute("user");
@@ -397,9 +395,28 @@
                         <div class="lesson-desc"><%= l.getLevel() %></div>
                     </div>
                     <div class="lesson-action">
-                        <a href="lesson-detail?id=<%= l.getLessonId() %>" class="btn-lesson">
+<!--                        <a href="lesson-detail?id=<%= l.getLessonId() %>" class="btn-lesson">
                             Học <span>→</span>
-                        </a>
+                        </a>-->
+                        <%
+                            String lessonLevelStr = l.getLevel();   // ví dụ "N5"
+                            int lessonLevel = Integer.parseInt(lessonLevelStr.substring(1)); 
+                            int userLevel = user.getLevel();
+                        %>
+                        
+                        <% if (lessonLevel >= userLevel) { %>
+
+                            <a href="lesson-detail?id=<%= l.getLessonId() %>" class="btn-lesson">
+                                Học <span>→</span>
+                            </a>
+
+                        <% } else { %>
+
+                            <span class="btn-lesson" style="opacity:0.4; cursor:not-allowed;">
+                                🔒 Yêu cầu N<%= l.getLevel() %>
+                            </span>
+
+                        <% } %>
                     </div>
                 </div>
                 <% } %>
