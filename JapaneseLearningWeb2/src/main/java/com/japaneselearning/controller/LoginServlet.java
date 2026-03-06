@@ -50,6 +50,19 @@ public class LoginServlet extends HttpServlet {
             User user = dao.login(savedUsername, savedPassword);
 
             if (user != null) {
+                if ("BANNED".equalsIgnoreCase(user.getStatus()) || "BAN".equalsIgnoreCase(user.getStatus())) {
+                    request.setAttribute("error", "Tài khoản của bạn đã bị khóa!");
+                    // Remove remember me cookies just in case
+                    Cookie cUser = new Cookie("rememberUser", "");
+                    cUser.setMaxAge(0);
+                    response.addCookie(cUser);
+                    Cookie cPass = new Cookie("rememberPass", "");
+                    cPass.setMaxAge(0);
+                    response.addCookie(cPass);
+                    request.getRequestDispatcher("login.jsp").forward(request, response);
+                    return;
+                }
+
                 session = request.getSession();
                 session.setAttribute("user", user);
 
@@ -79,6 +92,12 @@ public class LoginServlet extends HttpServlet {
         User user = dao.login(username, password);
 
         if (user != null) {
+            if ("BANNED".equalsIgnoreCase(user.getStatus()) || "BAN".equalsIgnoreCase(user.getStatus())) {
+                request.setAttribute("error", "Tài khoản của bạn đã bị khóa!");
+                request.getRequestDispatcher("login.jsp").forward(request, response);
+                return;
+            }
+
             HttpSession session = request.getSession();
             session.setAttribute("user", user);
 

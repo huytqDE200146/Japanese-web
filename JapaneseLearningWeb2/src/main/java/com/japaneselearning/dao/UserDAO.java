@@ -31,7 +31,7 @@ public class UserDAO {
 
     // Đăng nhập
     public User login(String username, String password) {
-        String sql = "SELECT * FROM users WHERE username=? AND password=? AND status='ACTIVE'";
+        String sql = "SELECT * FROM users WHERE username=? AND password=? AND (status='ACTIVE' OR status='BANNED' OR status='BAN')";
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -51,7 +51,7 @@ public class UserDAO {
 
     // Tìm user theo Google ID
     public User findByGoogleId(String googleId) {
-        String sql = "SELECT * FROM users WHERE google_id=? AND status='ACTIVE'";
+        String sql = "SELECT * FROM users WHERE google_id=? AND (status='ACTIVE' OR status='BANNED' OR status='BAN')";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
