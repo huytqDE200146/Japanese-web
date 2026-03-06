@@ -58,10 +58,24 @@ public class AIQuizServlet extends HttpServlet {
             int lessonId = reqBody.get("lessonId").getAsInt();
             com.japaneselearning.dao.LessonDAO lessonDAO = new com.japaneselearning.dao.LessonDAO();
             com.japaneselearning.model.Lesson lesson = lessonDAO.getLessonById(lessonId);
-            if (lesson != null && lesson.getContentPath() != null) {
-                try (InputStream contentStream = getServletContext().getResourceAsStream("/" + lesson.getContentPath())) {
-                    if (contentStream != null) {
-                        lessonContent = new String(contentStream.readAllBytes(), StandardCharsets.UTF_8);
+            
+            if (lesson != null) {
+                // Access Check
+                boolean isPremium = user.hasPremiumAccess();
+                int userLevel = user.getLevel();
+                int lessonLevel = Integer.parseInt(lesson.getLevel().substring(1)); // "N5" -> 5
+                
+                if (!isPremium && lessonLevel != userLevel) {
+                    response.setStatus(403);
+                    response.getWriter().write("{\"error\":\"Bạn cần nâng cấp Premium để truy cập nội dung ngoài trình độ N" + userLevel + "\"}");
+                    return;
+                }
+
+                if (lesson.getContentPath() != null) {
+                    try (InputStream contentStream = getServletContext().getResourceAsStream("/" + lesson.getContentPath())) {
+                        if (contentStream != null) {
+                            lessonContent = new String(contentStream.readAllBytes(), StandardCharsets.UTF_8);
+                        }
                     }
                 }
             }

@@ -1,5 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%
-    // Redirect to LoginServlet to check cookie/session
-    response.sendRedirect(request.getContextPath() + "/login");
+    // Redirect to home.jsp (which now acts as both user dashboard and guest landing page)
+    response.sendRedirect("home.jsp");
 %>

@@ -6,12 +6,13 @@
     String currentPage = request.getParameter("activePage");
     if (currentPage == null) currentPage = "";
     
-    // Avatar letter
+    // Avatar letter & state setup
     String navAvatarLetter = "U";
-    String navUserName = "User";
+    String navUserName = "Guest";
     String navEmail = "";
     String navUsername = "";
     boolean navIsPremium = false;
+    boolean isNavGuest = (navUser == null);
     
     if (navUser != null) {
         navUserName = navUser.getFullName() != null ? navUser.getFullName() : "User";
@@ -75,51 +76,59 @@
             
             <!-- Right Section -->
             <div class="navbar-right">
-                <!-- Premium Button -->
-                <a href="premium.jsp" class="premium-btn <%= navIsPremium ? "is-premium" : "" %>">
-                    <% if (navIsPremium) { %>
-                        <span class="premium-icon">👑</span>
-                        <span class="premium-text">Thay đổi gói</span>
-                    <% } else { %>
-                        <span class="premium-icon">⭐</span>
-                        <span class="premium-text">Nâng cấp</span>
-                    <% } %>
-                </a>
-                
-                <!-- User Profile with Dropdown -->
-                <div class="user-profile" id="userProfileBtn" onclick="toggleUserDropdown(event)">
-                    <div class="user-avatar <%= navIsPremium ? "premium" : "" %>">
-                        <span class="avatar-letter"><%= navAvatarLetter %></span>
+                <% if (isNavGuest) { %>
+                    <!-- Guest Actions -->
+                    <div style="display: flex; gap: 1rem;">
+                        <a href="login.jsp" class="nav-link" style="padding: 0.6rem 1.2rem; font-weight: 600;">Log In</a>
+                        <a href="register.jsp" class="premium-btn" style="color: #1a1a2e; background: linear-gradient(135deg, #ffb7c5, #ff6b81); border: none;">Sign Up</a>
+                    </div>
+                <% } else { %>
+                    <!-- Premium Button -->
+                    <a href="premium.jsp" class="premium-btn <%= navIsPremium ? "is-premium" : "" %>">
                         <% if (navIsPremium) { %>
-                            <span class="crown-badge">👑</span>
+                            <span class="premium-icon">👑</span>
+                            <span class="premium-text">Thay đổi gói</span>
+                        <% } else { %>
+                            <span class="premium-icon">⭐</span>
+                            <span class="premium-text">Nâng cấp</span>
                         <% } %>
-                    </div>
-                    <div class="user-info">
-                        <span class="user-name"><%= navUserName %></span>
-                        <span class="user-role"><%= navIsPremium ? "Premium Member" : "Free Member" %></span>
-                    </div>
-                    <span class="dropdown-arrow" id="dropdownArrow">▾</span>
-                </div>
-                
-                <!-- User Dropdown Menu -->
-                <div class="user-dropdown" id="userDropdown">
-                    <div class="dropdown-header">
-                        <div class="dropdown-avatar <%= navIsPremium ? "premium" : "" %>">
-                            <span><%= navAvatarLetter %></span>
-                        </div>
-                        <div class="dropdown-user-info">
-                            <span class="dropdown-name"><%= navUserName %></span>
-                            <span class="dropdown-email"><%= navEmail %></span>
-                        </div>
-                    </div>
-                    <div class="dropdown-divider"></div>
-                    <a href="profile" class="dropdown-item-link">
-                        <span>📝</span> Thông tin hồ sơ
                     </a>
-                    <a href="logout" class="dropdown-logout">
-                        <span>🚪</span> Đăng xuất
-                    </a>
-                </div>
+                    
+                    <!-- User Profile with Dropdown -->
+                    <div class="user-profile" id="userProfileBtn" onclick="toggleUserDropdown(event)">
+                        <div class="user-avatar <%= navIsPremium ? "premium" : "" %>">
+                            <span class="avatar-letter"><%= navAvatarLetter %></span>
+                            <% if (navIsPremium) { %>
+                                <span class="crown-badge">👑</span>
+                            <% } %>
+                        </div>
+                        <div class="user-info">
+                            <span class="user-name"><%= navUserName %></span>
+                            <span class="user-role"><%= navIsPremium ? "Premium Member" : "Free Member" %></span>
+                        </div>
+                        <span class="dropdown-arrow" id="dropdownArrow">▾</span>
+                    </div>
+                    
+                    <!-- User Dropdown Menu -->
+                    <div class="user-dropdown" id="userDropdown">
+                        <div class="dropdown-header">
+                            <div class="dropdown-avatar <%= navIsPremium ? "premium" : "" %>">
+                                <span><%= navAvatarLetter %></span>
+                            </div>
+                            <div class="dropdown-user-info">
+                                <span class="dropdown-name"><%= navUserName %></span>
+                                <span class="dropdown-email"><%= navEmail %></span>
+                            </div>
+                        </div>
+                        <div class="dropdown-divider"></div>
+                        <a href="profile" class="dropdown-item-link">
+                            <span>📝</span> Thông tin hồ sơ
+                        </a>
+                        <a href="logout" class="dropdown-logout">
+                            <span>🚪</span> Đăng xuất
+                        </a>
+                    </div>
+                <% } %>
             </div>
         </div>
     </div>

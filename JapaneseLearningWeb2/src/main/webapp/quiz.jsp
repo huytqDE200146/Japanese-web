@@ -282,9 +282,21 @@
                 <div class="lesson-quiz-item">
                     <div class="lesson-quiz-num"><%= lNum %></div>
                     <div class="lesson-quiz-name"><%= l.getDescription() %></div>
+                    <%
+                        String lessonLevelStr = l.getLevel();
+                        int lessonLevel = Integer.parseInt(lessonLevelStr.substring(1));
+                        int userLevel = user.getLevel();
+                        boolean isPremium = user.hasPremiumAccess();
+                    %>
+                    <% if (isPremium || lessonLevel == userLevel) { %>
                     <button class="btn-gen-quiz" onclick="openAiQuizModal(<%= l.getLessonId() %>, '<%= l.getDescription().replace("'", "\\'") %>')">
                         🤖 Tạo Quiz
                     </button>
+                    <% } else { %>
+                    <button class="btn-gen-quiz" style="opacity: 0.4; cursor: not-allowed;" title="Nâng cấp Premium để mở khóa nội dung này">
+                        🔒 Yêu cầu N<%= userLevel %> / Premium
+                    </button>
+                    <% } %>
                 </div>
                 <% } %>
             </div>

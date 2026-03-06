@@ -429,9 +429,10 @@
                             String lessonLevelStr = l.getLevel();   // ví dụ "N5"
                             int lessonLevel = Integer.parseInt(lessonLevelStr.substring(1)); 
                             int userLevel = user.getLevel();
+                            boolean isPremium = user.hasPremiumAccess();
                         %>
                         
-                        <% if (lessonLevel >= userLevel) { %>
+                        <% if (isPremium || lessonLevel == userLevel) { %>
 
                             <a href="lesson-detail?id=<%= l.getLessonId() %>" class="btn-lesson">
                                 Học <span>→</span>
@@ -439,8 +440,8 @@
 
                         <% } else { %>
 
-                            <span class="btn-lesson" style="opacity:0.4; cursor:not-allowed;">
-                                🔒 Yêu cầu N<%= l.getLevel() %>
+                            <span class="btn-lesson" style="opacity:0.4; cursor:not-allowed;" title="Nâng cấp Premium để mở khóa nội dung này">
+                                🔒 Yêu cầu Premium
                             </span>
 
                         <% } %>

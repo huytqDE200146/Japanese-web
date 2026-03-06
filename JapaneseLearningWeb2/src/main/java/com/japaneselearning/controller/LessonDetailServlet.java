@@ -9,6 +9,8 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+import jakarta.servlet.http.HttpSession;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -40,6 +42,24 @@ public class LessonDetailServlet extends HttpServlet {
 
             if (lesson == null) {
                 response.sendRedirect("lessons");
+                return;
+            }
+
+            // Check access control
+            HttpSession session = request.getSession(false);
+            if (session != null && session.getAttribute("user") != null) {
+                com.japaneselearning.model.User user = (com.japaneselearning.model.User) session.getAttribute("user");
+                boolean isPremium = user.hasPremiumAccess();
+                int userLevel = user.getLevel();
+                int lessonLevel = Integer.parseInt(lesson.getLevel().substring(1)); // e.g., "N5" -> 5
+
+                if (!isPremium && lessonLevel != userLevel) {
+                    session.setAttribute("error", "Bạn phải nâng cấp Premium để học bài viết ngoài trình độ N" + userLevel);
+                    response.sendRedirect("premium.jsp");
+                    return;
+                }
+            } else {
+                response.sendRedirect("login.jsp");
                 return;
             }
 
