@@ -68,6 +68,8 @@ public class GoogleLoginServlet extends HttpServlet {
                     // Phân quyền
                     if ("ADMIN".equals(user.getRole())) {
                         response.sendRedirect("admin/home.jsp");
+                    } else if (user.getLevel() == 0) {
+                        response.sendRedirect("select-level");
                     } else {
                         response.sendRedirect("home.jsp");
                     }

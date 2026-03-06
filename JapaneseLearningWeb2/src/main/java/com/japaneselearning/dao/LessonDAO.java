@@ -57,7 +57,8 @@ public class LessonDAO {
         List<Lesson> allLessons = getAllLessons();
         
         for (Lesson lesson : allLessons) {
-            String category = lesson.getName();
+            // Group by name + level so each card shows only one level
+            String category = lesson.getName() + " (" + lesson.getLevel() + ")";
             groupedLessons.computeIfAbsent(category, k -> new ArrayList<>()).add(lesson);
         }
         

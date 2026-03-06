@@ -9,6 +9,7 @@
         return;
     }
     Map<String, List<Lesson>> groupedLessons = (Map<String, List<Lesson>>) request.getAttribute("groupedLessons");
+    String userLevelStr = user.getLevel() > 0 ? "N" + user.getLevel() : "";
 %>
 
 <!DOCTYPE html>
@@ -335,7 +336,7 @@
             </div>
             <div class="quick-stat">
                 <span class="quick-stat-icon">🎯</span>
-                <span>JLPT N5</span>
+                <span>🎯 JLPT <%= userLevelStr.isEmpty() ? "未設定" : userLevelStr %></span>
             </div>
         </div>
     </section>
@@ -347,43 +348,69 @@
             <p>まだレッスンがありません。Hãy quay lại sau!</p>
         </div>
     <% } else { 
-        // Define icons and gradients for each category
+        // Define icons and gradients for each base category name
         java.util.Map<String, String> categoryIcons = new java.util.LinkedHashMap<>();
-        categoryIcons.put("Hiragana cơ bản", "あ");
-        categoryIcons.put("Katakana cơ bản", "カ");
-        categoryIcons.put("Từ Vựng & Kanji", "語");
-        categoryIcons.put("Ngữ pháp cơ bản", "文");
+        categoryIcons.put("Hiragana", "あ");
+        categoryIcons.put("Katakana", "カ");
+        categoryIcons.put("Từ Vựng", "語");
+        categoryIcons.put("Ngữ pháp", "文");
         categoryIcons.put("Kanji", "漢");
         
         java.util.Map<String, String> categoryGradients = new java.util.LinkedHashMap<>();
-        categoryGradients.put("Hiragana cơ bản", "gradient-hiragana");
-        categoryGradients.put("Katakana cơ bản", "gradient-katakana");
-        categoryGradients.put("Từ Vựng & Kanji", "gradient-vocab");
-        categoryGradients.put("Ngữ pháp cơ bản", "gradient-grammar");
+        categoryGradients.put("Hiragana", "gradient-hiragana");
+        categoryGradients.put("Katakana", "gradient-katakana");
+        categoryGradients.put("Từ Vựng", "gradient-vocab");
+        categoryGradients.put("Ngữ pháp", "gradient-grammar");
         categoryGradients.put("Kanji", "gradient-kanji");
         
         int catIndex = 0;
     %>
 
+    <!-- Level Filter Bar -->
+    <div class="filter-bar animate-fade-in">
+        <button class="filter-btn<%= "N5".equals(userLevelStr) ? " active" : "" %>" data-filter="N5" onclick="filterLevel('N5', this)">N5<%= "N5".equals(userLevelStr) ? " ✓" : "" %></button>
+        <button class="filter-btn<%= "N4".equals(userLevelStr) ? " active" : "" %>" data-filter="N4" onclick="filterLevel('N4', this)">N4<%= "N4".equals(userLevelStr) ? " ✓" : "" %></button>
+        <button class="filter-btn<%= "N3".equals(userLevelStr) ? " active" : "" %>" data-filter="N3" onclick="filterLevel('N3', this)">N3<%= "N3".equals(userLevelStr) ? " ✓" : "" %></button>
+        <button class="filter-btn<%= "N2".equals(userLevelStr) ? " active" : "" %>" data-filter="N2" onclick="filterLevel('N2', this)">N2<%= "N2".equals(userLevelStr) ? " ✓" : "" %></button>
+        <button class="filter-btn<%= "N1".equals(userLevelStr) ? " active" : "" %>" data-filter="N1" onclick="filterLevel('N1', this)">N1<%= "N1".equals(userLevelStr) ? " ✓" : "" %></button>
+    </div>
+
     <!-- Category Grid -->
-    <div class="category-grid">
+    <div class="category-grid" id="categoryGrid">
         <% for (Map.Entry<String, List<Lesson>> entry : groupedLessons.entrySet()) {
             String category = entry.getKey();
             List<Lesson> lessons = entry.getValue();
-            String icon = categoryIcons.getOrDefault(category, "📖");
-            String gradient = categoryGradients.getOrDefault(category, "gradient-default");
+            
+            // Find icon and gradient by checking if category contains the base name
+            String icon = "📖";
+            String gradient = "gradient-default";
+            for (Map.Entry<String, String> iconEntry : categoryIcons.entrySet()) {
+                if (category.contains(iconEntry.getKey())) {
+                    icon = iconEntry.getValue();
+                    gradient = categoryGradients.getOrDefault(iconEntry.getKey(), "gradient-default");
+                    break;
+                }
+            }
             catIndex++;
         %>
-        <div class="category-card animate-fade-in collapsed" id="cat-<%= catIndex %>">
+        <%
+            String catLevel = lessons.get(0).getLevel();
+            boolean isUserLevel = catLevel.equals(userLevelStr);
+        %>
+        <div class="category-card animate-fade-in<%= isUserLevel ? " user-level-highlight" : " collapsed" %>" id="cat-<%= catIndex %>" data-level="<%= catLevel %>"
+             <% if (isUserLevel) { %>style="border-color: rgba(255, 183, 197, 0.4); box-shadow: 0 0 20px rgba(188, 0, 45, 0.15);"<% } %>>
             <div class="category-card-header" onclick="toggleCategory(<%= catIndex %>)">
                 <div class="category-icon-box <%= gradient %>"><%= icon %></div>
                 <div class="category-info">
                     <h3><%= category %></h3>
                     <div class="category-meta">
                         <span>📚 <%= lessons.size() %> bài học</span>
-                        <span>🎯 N5</span>
+                        <span>🎯 <%= lessons.get(0).getLevel() %></span>
                     </div>
                 </div>
+                <% if (isUserLevel) { %>
+                <span style="background: linear-gradient(135deg, #bc002d, #881337); color: white; font-size: 0.65rem; padding: 0.2rem 0.6rem; border-radius: 12px; font-weight: 600; white-space: nowrap;">⭐ Your Level</span>
+                <% } %>
                 <span class="toggle-icon">▼</span>
             </div>
             <div class="lessons-container" id="lessons-<%= catIndex %>">
@@ -440,6 +467,34 @@
         const card = document.getElementById('cat-' + id);
         card.classList.toggle('collapsed');
     }
+
+    function filterLevel(level, btn) {
+        // Update active button
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        // Filter cards
+        const cards = document.querySelectorAll('.category-card');
+        cards.forEach(card => {
+            const cardLevel = card.getAttribute('data-level');
+            if (level === 'all' || cardLevel === level) {
+                card.style.display = '';
+                // Auto-expand visible cards
+                card.classList.remove('collapsed');
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    }
+
+    // Auto-filter to user's level on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        const userLevel = '<%= userLevelStr %>';
+        if (userLevel) {
+            const btn = document.querySelector('.filter-btn[data-filter="' + userLevel + '"]');
+            if (btn) filterLevel(userLevel, btn);
+        }
+    });
 </script>
 </body>
 </html>

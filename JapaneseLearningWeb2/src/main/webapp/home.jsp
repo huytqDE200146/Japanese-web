@@ -164,7 +164,7 @@
                 </div>
                 <div class="detail-item">
                     <span class="detail-label">Current Level</span>
-                    <span class="detail-value">JLPT N5</span>
+                    <span class="detail-value">JLPT N<%= user.getLevel() > 0 ? user.getLevel() : "未設定" %></span>
                 </div>
             </div>
         </div>

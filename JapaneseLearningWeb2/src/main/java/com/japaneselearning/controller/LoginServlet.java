@@ -55,6 +55,8 @@ public class LoginServlet extends HttpServlet {
 
                 if ("ADMIN".equals(user.getRole())) {
                     response.sendRedirect("admin/home.jsp");
+                } else if (user.getLevel() == 0) {
+                    response.sendRedirect("select-level");
                 } else {
                     response.sendRedirect("home.jsp");
                 }
@@ -96,6 +98,8 @@ public class LoginServlet extends HttpServlet {
             // Phân quyền
             if ("ADMIN".equals(user.getRole())) {
                 response.sendRedirect("admin/home.jsp");
+            } else if (user.getLevel() == 0) {
+                response.sendRedirect("select-level");
             } else {
                 response.sendRedirect("home.jsp");
             }

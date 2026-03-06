@@ -195,6 +195,13 @@ public class UserDAO {
         u.setStatus(rs.getString("status"));
         u.setCreatedAt(rs.getTimestamp("created_at"));
         
+        // Level field
+        try {
+            u.setLevel(rs.getInt("level"));
+        } catch (Exception e) {
+            u.setLevel(0);
+        }
+        
         // Premium fields (với null check cho cột mới)
         try {
             u.setPremium(rs.getBoolean("is_premium"));
@@ -213,6 +220,22 @@ public class UserDAO {
         }
         
         return u;
+    }
+
+    /**
+     * Cập nhật level cho user (N5=5, N4=4, N3=3, N2=2, N1=1)
+     */
+    public boolean updateUserLevel(int userId, int level) {
+        String sql = "UPDATE users SET level=? WHERE id=?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, level);
+            ps.setInt(2, userId);
+            return ps.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
     // --- ADMIN METHODS ---
