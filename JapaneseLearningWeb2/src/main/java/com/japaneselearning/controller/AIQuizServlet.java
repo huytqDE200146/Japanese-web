@@ -20,7 +20,7 @@ import java.nio.charset.StandardCharsets;
 @WebServlet(name = "AIQuizServlet", urlPatterns = {"/ai-quiz"})
 public class AIQuizServlet extends HttpServlet {
 
-    private static final String GROQ_API_KEY = "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";
+    private static final String GROQ_API_KEY = "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";
     private static final String GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
 
     @Override
@@ -95,7 +95,7 @@ public class AIQuizServlet extends HttpServlet {
                 "2. Mỗi đáp án phải NGẮN GỌN (1-3 từ), KHÔNG dùng dấu / hoặc liệt kê nhiều nghĩa\n" +
                 "3. Trường answer phải COPY NGUYÊN VĂN một phần tử trong mảng options\n" +
                 "4. KHÔNG dùng nhãn A, B, C, D\n" +
-                "5. CHỈ trả về JSON, không nói gì thêm\n\n" +
+                "5. CHỈ trả về JSON, không nói gì thêm và đáp án đúng random ở 4 vị trí\n\n" +
                 "FORMAT:\n" +
                 "[{\"question\":\"câu hỏi\",\"options\":[\"opt1\",\"opt2\",\"opt3\",\"opt4\"],\"answer\":\"opt1\"}]\n\n" +
                 "VÍ DỤ ĐÚNG:\n" +

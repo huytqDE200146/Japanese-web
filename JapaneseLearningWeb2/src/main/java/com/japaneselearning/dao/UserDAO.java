@@ -11,8 +11,8 @@ public class UserDAO {
 
     // Đăng ký
     public boolean register(User user) {
-        String sql = "INSERT INTO users(username, password, email, full_name, level, role, status) "
-                   + "VALUES (?, ?, ?, ?,5, 'USER', 'ACTIVE')";
+        String sql = "INSERT INTO users(username, password, email, full_name, role, status) "
+                   + "VALUES (?, ?, ?, ?, 'USER', 'ACTIVE')";
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -68,8 +68,8 @@ public class UserDAO {
 
     // Đăng ký user từ Google (không có password)
     public User registerGoogleUser(String googleId, String email, String fullName) {
-        String sql = "INSERT INTO users(username, password, email, full_name, level, role, status, google_id) "
-                   + "VALUES (?, '', ?, ?,5, 'USER', 'ACTIVE', ?)";
+        String sql = "INSERT INTO users(username, password, email, full_name, role, status, google_id) "
+                   + "VALUES (?, '', ?, ?, 'USER', 'ACTIVE', ?)";
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
@@ -191,7 +191,6 @@ public class UserDAO {
         u.setUsername(rs.getString("username"));
         u.setEmail(rs.getString("email"));
         u.setFullName(rs.getString("full_name"));
-        u.setLevel(rs.getInt("level"));
         u.setRole(rs.getString("role"));
         u.setStatus(rs.getString("status"));
         u.setCreatedAt(rs.getTimestamp("created_at"));
@@ -318,7 +317,7 @@ public class UserDAO {
      */
     public boolean deleteUser(int userId) {
         String deletePayments = "DELETE FROM payments WHERE user_id = ?";
-        String deleteUser = "DELETE FROM users WHERE user_id = ?";
+        String deleteUser = "DELETE FROM users WHERE id = ?";
         try (Connection conn = DBConnection.getConnection()) {
             // Xoá payments liên quan
             try (PreparedStatement ps = conn.prepareStatement(deletePayments)) {
