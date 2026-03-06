@@ -397,7 +397,7 @@
             String catLevel = lessons.get(0).getLevel();
             boolean isUserLevel = catLevel.equals(userLevelStr);
         %>
-        <div class="category-card animate-fade-in<%= isUserLevel ? " user-level-highlight" : " collapsed" %>" id="cat-<%= catIndex %>" data-level="<%= catLevel %>"
+        <div class="category-card animate-fade-in collapsed<%= isUserLevel ? " user-level-highlight" : "" %>" id="cat-<%= catIndex %>" data-level="<%= catLevel %>"
              <% if (isUserLevel) { %>style="border-color: rgba(255, 183, 197, 0.4); box-shadow: 0 0 20px rgba(188, 0, 45, 0.15);"<% } %>>
             <div class="category-card-header" onclick="toggleCategory(<%= catIndex %>)">
                 <div class="category-icon-box <%= gradient %>"><%= icon %></div>
@@ -479,8 +479,8 @@
             const cardLevel = card.getAttribute('data-level');
             if (level === 'all' || cardLevel === level) {
                 card.style.display = '';
-                // Auto-expand visible cards
-                card.classList.remove('collapsed');
+                // Keep them collapsed when switching tabs
+                card.classList.add('collapsed');
             } else {
                 card.style.display = 'none';
             }

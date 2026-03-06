@@ -40,8 +40,8 @@ public class RegisterServlet extends HttpServlet {
             return;
         }
 
-        if (password.length() < 6) {
-            request.setAttribute("error", "Mật khẩu phải có ít nhất 6 ký tự!");
+        if (password.length() < 8 || !password.matches(".*\\d.*") || !password.matches(".*[a-z].*") || !password.matches(".*[A-Z].*")) {
+            request.setAttribute("error", "Mật khẩu chưa đáp ứng yêu cầu bảo mật!");
             request.getRequestDispatcher("register.jsp").forward(request, response);
             return;
         }
