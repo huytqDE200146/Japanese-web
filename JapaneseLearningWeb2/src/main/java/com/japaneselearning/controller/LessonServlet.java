@@ -2,17 +2,25 @@ package com.japaneselearning.controller;
 
 import com.japaneselearning.dao.LessonDAO;
 import com.japaneselearning.model.Lesson;
+<<<<<<< HEAD
 import com.japaneselearning.model.User;
+=======
+>>>>>>> f88f49bbc623c4dcecf2fbf29b3238f8f6b4161b
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+<<<<<<< HEAD
 import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 import java.util.ArrayList;
+=======
+
+import java.io.IOException;
+>>>>>>> f88f49bbc623c4dcecf2fbf29b3238f8f6b4161b
 import java.util.List;
 import java.util.Map;
 
@@ -30,6 +38,7 @@ public class LessonServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
+<<<<<<< HEAD
         // 1. Kiểm tra session và lấy thông tin người dùng
         HttpSession session = request.getSession(false);
         User user = (session != null) ? (User) session.getAttribute("user") : null;
@@ -52,5 +61,17 @@ public class LessonServlet extends HttpServlet {
 
         // 5. CHỈ GỌI FORWARD DUY NHẤT 1 LẦN Ở CUỐI
         request.getRequestDispatcher("/lesson.jsp").forward(request, response);
+=======
+        // Get lessons grouped by category for better display
+        Map<String, List<Lesson>> groupedLessons = lessonDAO.getLessonsGroupedByCategory();
+        request.setAttribute("groupedLessons", groupedLessons);
+        
+        // Also pass flat list for backward compatibility
+        List<Lesson> lessons = lessonDAO.getAllLessons();
+        request.setAttribute("lessons", lessons);
+        
+        request.getRequestDispatcher("/lesson.jsp")
+               .forward(request, response);
+>>>>>>> f88f49bbc623c4dcecf2fbf29b3238f8f6b4161b
     }
 }

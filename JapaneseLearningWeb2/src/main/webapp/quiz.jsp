@@ -16,19 +16,22 @@
         return;
     }
     
-    // Category icons & gradients
+    String userLevelStr = user.getLevel() > 0 ? "N" + user.getLevel() : "";
+
+    
+    // Category icons & gradients for base names
     java.util.Map<String, String> catIcons = new java.util.LinkedHashMap<>();
-    catIcons.put("Hiragana cơ bản", "あ");
-    catIcons.put("Katakana cơ bản", "カ");
-    catIcons.put("Từ Vựng & Kanji", "語");
-    catIcons.put("Ngữ pháp cơ bản", "文");
+    catIcons.put("Hiragana", "あ");
+    catIcons.put("Katakana", "カ");
+    catIcons.put("Từ Vựng", "語");
+    catIcons.put("Ngữ pháp", "文");
     catIcons.put("Kanji", "漢");
     
     java.util.Map<String, String> catGrads = new java.util.LinkedHashMap<>();
-    catGrads.put("Hiragana cơ bản", "grad-hiragana");
-    catGrads.put("Katakana cơ bản", "grad-katakana");
-    catGrads.put("Từ Vựng & Kanji", "grad-vocab");
-    catGrads.put("Ngữ pháp cơ bản", "grad-grammar");
+    catGrads.put("Hiragana", "grad-hiragana");
+    catGrads.put("Katakana", "grad-katakana");
+    catGrads.put("Từ Vựng", "grad-vocab");
+    catGrads.put("Ngữ pháp", "grad-grammar");
     catGrads.put("Kanji", "grad-kanji");
 %>
 <!DOCTYPE html>
@@ -146,6 +149,29 @@
         .option-btn.wrong { background:rgba(248,113,113,0.2); border-color:#f87171; color:#f87171; }
         .option-btn.disabled { cursor:default; opacity:0.6; }
         .option-btn.show-correct { border-color:#4ade80; background:rgba(74,222,128,0.1); }
+        
+        /* ===== FILTER BAR ===== */
+        .filter-bar {
+            display: flex; gap: 0.8rem; margin-bottom: 1.5rem; flex-wrap: wrap;
+        }
+        .filter-btn {
+            background: var(--glass-bg); border: 1px solid var(--glass-border);
+            color: var(--light-text); padding: 0.5rem 1.2rem; border-radius: 25px;
+            font-size: 0.85rem; cursor: pointer; transition: all 0.2s ease;
+        }
+        .filter-btn:hover, .filter-btn.active {
+            background: var(--primary-red); border-color: var(--primary-red); color: white;
+        }
+
+        /* ===== AI CATEGORY GRID (3 Columns) ===== */
+        .ai-category-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            align-items: start; /* Prevents stretching other cards in the row when one expands */
+        }
+        @media (max-width: 1024px) { .ai-category-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 768px) { .ai-category-grid { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
@@ -209,37 +235,75 @@
         <h2 class="section-title-quiz">🤖 Chọn bài học để AI tạo Quiz</h2>
         <p style="color:var(--muted-text);margin-bottom:1.5rem;">AI sẽ đọc nội dung bài học và tự động tạo câu hỏi trắc nghiệm. Bạn có thể chọn số câu hỏi (5/10/15).</p>
 
+        <!-- Level Filter Bar -->
+        <div class="filter-bar animate-fade-in" style="margin-bottom: 2rem;">
+            <button class="filter-btn<%= "N5".equals(userLevelStr) ? " active" : "" %>" data-filter="N5" onclick="filterQuizLevel('N5', this)">N5<%= "N5".equals(userLevelStr) ? " ✓" : "" %></button>
+            <button class="filter-btn<%= "N4".equals(userLevelStr) ? " active" : "" %>" data-filter="N4" onclick="filterQuizLevel('N4', this)">N4<%= "N4".equals(userLevelStr) ? " ✓" : "" %></button>
+            <button class="filter-btn<%= "N3".equals(userLevelStr) ? " active" : "" %>" data-filter="N3" onclick="filterQuizLevel('N3', this)">N3<%= "N3".equals(userLevelStr) ? " ✓" : "" %></button>
+            <button class="filter-btn<%= "N2".equals(userLevelStr) ? " active" : "" %>" data-filter="N2" onclick="filterQuizLevel('N2', this)">N2<%= "N2".equals(userLevelStr) ? " ✓" : "" %></button>
+            <button class="filter-btn<%= "N1".equals(userLevelStr) ? " active" : "" %>" data-filter="N1" onclick="filterQuizLevel('N1', this)">N1<%= "N1".equals(userLevelStr) ? " ✓" : "" %></button>
+        </div>
+
         <% if (groupedLessons != null && !groupedLessons.isEmpty()) {
             int catIdx = 0;
-            for (Map.Entry<String, List<Lesson>> entry : groupedLessons.entrySet()) {
+        %>
+        <div class="ai-category-grid" id="aiCategoryGrid">
+            <% for (Map.Entry<String, List<Lesson>> entry : groupedLessons.entrySet()) {
                 String category = entry.getKey();
                 List<Lesson> lessons = entry.getValue();
-                String icon = catIcons.getOrDefault(category, "📖");
-                String grad = catGrads.getOrDefault(category, "grad-default");
+                String icon = "📖";
+                String grad = "grad-default";
+                for (Map.Entry<String, String> iconEntry : catIcons.entrySet()) {
+                    if (category.contains(iconEntry.getKey())) {
+                        icon = iconEntry.getValue();
+                        grad = catGrads.getOrDefault(iconEntry.getKey(), "grad-default");
+                        break;
+                    }
+                }
                 catIdx++;
+                String catLevel = lessons.get(0).getLevel();
+                boolean isUserLevel = catLevel.equals(userLevelStr);
         %>
-        <div class="lesson-category-card" id="aiCat-<%= catIdx %>">
+        <div class="lesson-category-card collapsed<%= isUserLevel ? " user-level-highlight" : "" %>" id="aiCat-<%= catIdx %>" data-level="<%= catLevel %>"
+             <% if (isUserLevel) { %>style="border-color: rgba(255, 183, 197, 0.4); box-shadow: 0 0 20px rgba(188, 0, 45, 0.15);"<% } %>>
             <div class="lesson-cat-header" onclick="document.getElementById('aiCat-<%= catIdx %>').classList.toggle('collapsed')">
                 <div class="lesson-cat-icon <%= grad %>"><%= icon %></div>
-                <div class="lesson-cat-info">
+                <div class="lesson-cat-info" style="flex-grow: 1;">
                     <h4><%= category %></h4>
-                    <span>📚 <%= lessons.size() %> bài học</span>
+                    <span>📚 <%= lessons.size() %> bài học | 🎯 <%= catLevel %></span>
                 </div>
-                <span class="lesson-cat-toggle">▼</span>
+                <% if (isUserLevel) { %>
+                <span style="background: linear-gradient(135deg, #bc002d, #881337); color: white; font-size: 0.65rem; padding: 0.2rem 0.6rem; border-radius: 12px; font-weight: 600; white-space: nowrap; margin-right: 1rem;">⭐ Your Level</span>
+                <% } %>
+                <span class="lesson-cat-toggle" style="margin-left: 0;">▼</span>
             </div>
             <div class="lesson-list">
                 <% int lNum = 0; for (Lesson l : lessons) { lNum++; %>
                 <div class="lesson-quiz-item">
                     <div class="lesson-quiz-num"><%= lNum %></div>
                     <div class="lesson-quiz-name"><%= l.getDescription() %></div>
+                    <%
+                        String lessonLevelStr = l.getLevel();
+                        int lessonLevel = Integer.parseInt(lessonLevelStr.substring(1));
+                        int userLevel = user.getLevel();
+                        boolean isPremium = user.hasPremiumAccess();
+                    %>
+                    <% if (isPremium || lessonLevel == userLevel) { %>
                     <button class="btn-gen-quiz" onclick="openAiQuizModal(<%= l.getLessonId() %>, '<%= l.getDescription().replace("'", "\\'") %>')">
                         🤖 Tạo Quiz
                     </button>
+                    <% } else { %>
+                    <button class="btn-gen-quiz" style="opacity: 0.4; cursor: not-allowed;" title="Nâng cấp Premium để mở khóa nội dung này">
+                        🔒 Yêu cầu N<%= userLevel %> / Premium
+                    </button>
+                    <% } %>
                 </div>
                 <% } %>
             </div>
         </div>
-        <% } } else { %>
+        <%  } %>
+        </div> <!-- End ai-category-grid -->
+        <% } else { %>
         <div style="text-align:center;padding:3rem;color:var(--muted-text);">
             <div style="font-size:3rem;margin-bottom:1rem;">📚</div>
             <p>Chưa có bài học nào.</p>
@@ -535,6 +599,34 @@ function showAIR(){
     aiWrongs.forEach(w=>{h+='<div style="background:rgba(248,113,113,0.08);border:1px solid rgba(248,113,113,0.2);border-radius:12px;padding:1rem;margin-bottom:0.75rem;"><div style="font-weight:600;color:white;margin-bottom:0.3rem;">'+w.q+'</div><div style="color:#f87171;font-size:0.9rem;">❌ Bạn chọn: '+w.y+'</div><div style="color:#4ade80;font-size:0.9rem;">✅ Đáp án: '+w.c+'</div></div>';});
     wd.innerHTML=h;}else{wd.innerHTML='<p style="text-align:center;color:#4ade80;margin-top:1rem;">🎉 Đúng tất cả!</p>';}
 }
+
+// ==================== FILTER AI QUIZ LEVEL ====================
+function filterQuizLevel(level, btn) {
+    // Update active button
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    // Filter cards
+    const cards = document.querySelectorAll('.lesson-category-card');
+    cards.forEach(card => {
+        const cardLevel = card.getAttribute('data-level');
+        if (cardLevel === level) {
+            card.style.display = '';
+            // Make sure they stay collapsed when switching tabs
+            card.classList.add('collapsed');
+        } else {
+            card.style.display = 'none';
+        }
+    });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const userLevel = '<%= userLevelStr %>';
+    if (userLevel) {
+        const btn = document.querySelector('.filter-btn[data-filter="' + userLevel + '"]');
+        if (btn) filterQuizLevel(userLevel, btn);
+    }
+});
 </script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>

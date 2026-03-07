@@ -74,22 +74,7 @@ public class PaymentServlet extends HttpServlet {
             createPayment(request, response, user);
         }
     }
-    
-    /**
-     * Hiển thị trang Premium
-     */
-    private void showPremiumPage(HttpServletRequest request, HttpServletResponse response, User user) 
-            throws ServletException, IOException {
-        
-        // Refresh user data để lấy Premium status mới nhất
-        User refreshedUser = userDAO.getUserById(user.getId());
-        if (refreshedUser != null) {
-            request.getSession().setAttribute("user", refreshedUser);
-        }
-        
-        // Use redirect instead of forward to avoid path issues
-        response.sendRedirect(request.getContextPath() + "/premium.jsp");
-    }
+
     
     /**
      * Tạo thanh toán mới
@@ -162,9 +147,6 @@ public class PaymentServlet extends HttpServlet {
         try {
             // Lấy orderCode từ query params
             String orderCodeParam = request.getParameter("orderCode");
-            System.out.println("=== Payment Success Callback ===");
-            System.out.println("OrderCode: " + orderCodeParam);
-            System.out.println("All params: " + request.getQueryString());
             
             if (orderCodeParam == null) {
                 request.setAttribute("error", "Không tìm thấy mã đơn hàng");
@@ -193,7 +175,6 @@ public class PaymentServlet extends HttpServlet {
                 
                 // Nâng cấp user lên Premium
                 userDAO.upgradeToPremium(user.getId(), days);
-                System.out.println("User " + user.getId() + " upgraded to Premium for " + days + " days");
                 
                 // Refresh session user
                 User updatedUser = userDAO.getUserById(user.getId());

@@ -40,8 +40,13 @@ public class RegisterServlet extends HttpServlet {
             return;
         }
 
+<<<<<<< HEAD
         if (password.length() < 6) {
             request.setAttribute("error", "Mật khẩu phải có ít nhất 6 ký tự!");
+=======
+        if (password.length() < 8 || !password.matches(".*\\d.*") || !password.matches(".*[a-z].*") || !password.matches(".*[A-Z].*")) {
+            request.setAttribute("error", "Mật khẩu chưa đáp ứng yêu cầu bảo mật!");
+>>>>>>> f88f49bbc623c4dcecf2fbf29b3238f8f6b4161b
             request.getRequestDispatcher("register.jsp").forward(request, response);
             return;
         }
@@ -60,6 +65,7 @@ public class RegisterServlet extends HttpServlet {
             return;
         }
 
+<<<<<<< HEAD
         User user = new User(username.trim(), password, email.trim(), fullName.trim());
         boolean success = dao.register(user);
 
@@ -68,6 +74,64 @@ public class RegisterServlet extends HttpServlet {
             request.getRequestDispatcher("login.jsp").forward(request, response);
         } else {
             request.setAttribute("error", "Đăng ký thất bại. Vui lòng thử lại!");
+=======
+        if (dao.isEmailExist(email.trim())) {
+            request.setAttribute("error", "Email đã được sử dụng!");
+            request.getRequestDispatcher("register.jsp").forward(request, response);
+            return;
+        }
+
+        User user = new User(username.trim(), password, email.trim(), fullName.trim());
+        
+        // Generate Token
+        String token = java.util.UUID.randomUUID().toString();
+        
+        // Save to TokenStore
+        com.japaneselearning.utils.TokenStore.getInstance().storeUser(token, user);
+        
+        // Send email
+        try {
+            // Dựng URL tuyệt đối cho website dựa theo request hiện tại
+            String scheme = request.getScheme(); 
+            String serverName = request.getServerName();
+            int serverPort = request.getServerPort();
+            String contextPath = request.getContextPath();
+            String appBaseUrl = scheme + "://" + serverName + ":" + serverPort + contextPath;
+            String verifyLink = appBaseUrl + "/verify-register?token=" + token;
+
+            String subject = "Xác nhận đăng ký tài khoản - Japanese Learning";
+            String content = "<div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f4f7f6; border-radius: 10px;'>"
+                           + "<div style='background-color: #ffffff; padding: 40px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); text-align: center;'>"
+                           + "<h2 style='color: #2c3e50; margin-top: 0; margin-bottom: 20px;'>Xác nhận tài khoản của bạn</h2>"
+                           + "<p style='color: #555555; font-size: 16px; line-height: 1.6; margin-bottom: 30px; text-align: left;'>"
+                           + "Chào <b>" + user.getFullName() + "</b>,<br><br>"
+                           + "Cảm ơn bạn đã tham gia khóa học tại <b>Japanese Learning</b>. Để hoàn tất quá trình đăng ký, vui lòng xác nhận địa chỉ email của bạn bằng cách nhấn vào nút bên dưới:"
+                           + "</p>"
+                           + "<a href='" + verifyLink + "' style='display: inline-block; padding: 14px 30px; color: #ffffff; background-color: #007bff; text-decoration: none; border-radius: 6px; font-weight: bold; font-size: 16px; letter-spacing: 0.5px; transition: background-color 0.3s;'>XÁC THỰC EMAIL</a>"
+                           + "<p style='color: #888888; font-size: 13px; margin-top: 30px; margin-bottom: 0; text-align: left;'>"
+                           + "Nếu nút trên không hoạt động, bạn có thể copy và dán đường dẫn này vào trình duyệt:<br>"
+                           + "<a href='" + verifyLink + "' style='color: #007bff; text-decoration: underline; word-break: break-all;'>" + verifyLink + "</a>"
+                           + "</p>"
+                           + "</div>"
+                           + "<div style='text-align: center; margin-top: 20px; color: #999999; font-size: 12px;'>"
+                           + "Nếu bạn không thực hiện yêu cầu này, vui lòng bỏ qua email này.<br><br>"
+                           + "&copy; 2026 Japanese Learning Team. All rights reserved."
+                           + "</div>"
+                           + "</div>";
+            com.japaneselearning.utils.EmailUtility.sendEmail(user.getEmail(), subject, content);
+            
+            // Xóa session OTP cũ nếu có
+            jakarta.servlet.http.HttpSession session = request.getSession();
+            session.removeAttribute("registerUser");
+            session.removeAttribute("registerOTP");
+
+            response.sendRedirect("verify-register.jsp");
+        } catch (Exception e) {
+            e.printStackTrace();
+            // Xóa token nếu gửi mail lỗi
+            com.japaneselearning.utils.TokenStore.getInstance().removeUser(token);
+            request.setAttribute("error", "Lỗi khi gửi email xác thực. Vui lòng kiểm tra lại email hoặc thử lại sau.");
+>>>>>>> f88f49bbc623c4dcecf2fbf29b3238f8f6b4161b
             request.getRequestDispatcher("register.jsp").forward(request, response);
         }
     }

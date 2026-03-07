@@ -3,14 +3,13 @@
 
 <%
     User user = (User) session.getAttribute("user");
-    if (user == null) {
-        response.sendRedirect("login.jsp");
-        return;
-    }
+    boolean isGuest = (user == null);
+    
     // Get first letter for avatar
-    String avatarLetter = user.getFullName() != null && !user.getFullName().isEmpty() 
-        ? user.getFullName().substring(0, 1).toUpperCase() 
-        : "U";
+    String avatarLetter = "U";
+    if (!isGuest && user.getFullName() != null && !user.getFullName().isEmpty()) {
+        avatarLetter = user.getFullName().substring(0, 1).toUpperCase();
+    }
 %>
 
 <!DOCTYPE html>
@@ -96,7 +95,7 @@
                     <p class="course-desc">Master the fundamental Japanese writing system with interactive exercises.</p>
                     <div class="course-meta">
                         <span class="course-lessons">📚 12 lessons</span>
-                        <a href="lessons" class="btn-start">Start</a>
+                        <a href="<%= isGuest ? "login" : "lessons" %>" class="btn-start">Start</a>
                     </div>
                 </div>
             </div>
@@ -112,7 +111,7 @@
                     <p class="course-desc">Learn Katakana for foreign words and modern Japanese vocabulary.</p>
                     <div class="course-meta">
                         <span class="course-lessons">📚 10 lessons</span>
-                        <a href="lessons" class="btn-start">Start</a>
+                        <a href="<%= isGuest ? "login" : "lessons" %>" class="btn-start">Start</a>
                     </div>
                 </div>
             </div>
@@ -128,13 +127,29 @@
                     <p class="course-desc">Essential Kanji characters for everyday communication and reading.</p>
                     <div class="course-meta">
                         <span class="course-lessons">📚 25 lessons</span>
-                        <a href="lessons" class="btn-start">Start</a>
+                        <a href="<%= isGuest ? "login" : "lessons" %>" class="btn-start">Start</a>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
+    <!-- Call to Action for Guests OR User Profile -->
+    <% if (isGuest) { %>
+    <section class="animate-fade-in" style="margin-top: 4rem;">
+        <div class="user-card" style="text-align: center; padding: 4rem 2rem; background: linear-gradient(145deg, rgba(188, 0, 45, 0.15), rgba(20, 20, 35, 0.95)); border: 1px solid rgba(255, 183, 197, 0.2);">
+            <h2 style="font-family: 'Noto Serif JP', serif; font-size: 2rem; color: white; margin-bottom: 1rem;">Start Learning Japanese Today!</h2>
+            <p style="color: rgba(255,255,255,0.7); margin-bottom: 2rem; max-width: 600px; margin-left: auto; margin-right: auto;">
+                Unlock all interactive lessons, JLPT quizzes, AI chat features, and track your progress. 
+                Register a free account to begin your journey.
+            </p>
+            <div style="display: flex; gap: 1rem; justify-content: center;">
+                <a href="register.jsp" class="btn-start" style="padding: 0.8rem 2.5rem; font-size: 1.1rem; background: var(--gradient-primary);">Sign Up Now</a>
+                <a href="login.jsp" class="btn-start" style="padding: 0.8rem 2.5rem; font-size: 1.1rem; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white;">Log In</a>
+            </div>
+        </div>
+    </section>
+    <% } else { %>
     <!-- User Profile Section -->
     <section class="animate-fade-in">
         <div class="section-header">
@@ -164,11 +179,12 @@
                 </div>
                 <div class="detail-item">
                     <span class="detail-label">Current Level</span>
-                    <span class="detail-value">JLPT N5</span>
+                    <span class="detail-value">JLPT N<%= user.getLevel() > 0 ? user.getLevel() : "未設定" %></span>
                 </div>
             </div>
         </div>
     </section>
+    <% } %>
 
 </main>
 

@@ -1,5 +1,6 @@
 package com.japaneselearning.dao;
 
+<<<<<<< HEAD
 import com.japaneselearning.model.Progress;
 import com.japaneselearning.utils.DBConnection;
 
@@ -145,6 +146,19 @@ public class ProgressDAO {
     public int countCompletedLessons(int userId) {
 
         String sql = "SELECT COUNT(*) FROM lesson_progress WHERE user_id = ? AND completed = 1";
+=======
+import com.japaneselearning.utils.DBConnection;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+
+public class ProgressDAO {
+
+    public int countCompletedLessons(int userId) {
+        String sql = "SELECT COUNT(*) "
+                + "FROM progress "
+                + "WHERE user_id = ? AND completed = 1";
+>>>>>>> f88f49bbc623c4dcecf2fbf29b3238f8f6b4161b
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -164,8 +178,12 @@ public class ProgressDAO {
     }
 
     public int countTotalLessons() {
+<<<<<<< HEAD
 
         String sql = "SELECT COUNT(*) FROM lesson";
+=======
+        String sql = "SELECT COUNT(*) FROM lessons";
+>>>>>>> f88f49bbc623c4dcecf2fbf29b3238f8f6b4161b
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);
@@ -181,6 +199,7 @@ public class ProgressDAO {
 
         return 0;
     }
+<<<<<<< HEAD
     
     public int countTotalLessonsByLevel(String level) {
         String sql = "SELECT COUNT(*) FROM lesson WHERE level = ?";
@@ -206,4 +225,6 @@ public class ProgressDAO {
         } catch (Exception e) { e.printStackTrace(); }
         return 0;
     }
+=======
+>>>>>>> f88f49bbc623c4dcecf2fbf29b3238f8f6b4161b
 }

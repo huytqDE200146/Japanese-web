@@ -20,7 +20,7 @@ import java.nio.charset.StandardCharsets;
 @WebServlet(name = "AIQuizServlet", urlPatterns = {"/ai-quiz"})
 public class AIQuizServlet extends HttpServlet {
 
-    private static final String GROQ_API_KEY = "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";
+    private static final String GROQ_API_KEY = "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";
     private static final String GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
 
     @Override
@@ -58,10 +58,24 @@ public class AIQuizServlet extends HttpServlet {
             int lessonId = reqBody.get("lessonId").getAsInt();
             com.japaneselearning.dao.LessonDAO lessonDAO = new com.japaneselearning.dao.LessonDAO();
             com.japaneselearning.model.Lesson lesson = lessonDAO.getLessonById(lessonId);
-            if (lesson != null && lesson.getContentPath() != null) {
-                try (InputStream contentStream = getServletContext().getResourceAsStream("/" + lesson.getContentPath())) {
-                    if (contentStream != null) {
-                        lessonContent = new String(contentStream.readAllBytes(), StandardCharsets.UTF_8);
+            
+            if (lesson != null) {
+                // Access Check
+                boolean isPremium = user.hasPremiumAccess();
+                int userLevel = user.getLevel();
+                int lessonLevel = Integer.parseInt(lesson.getLevel().substring(1)); // "N5" -> 5
+                
+                if (!isPremium && lessonLevel != userLevel) {
+                    response.setStatus(403);
+                    response.getWriter().write("{\"error\":\"Bạn cần nâng cấp Premium để truy cập nội dung ngoài trình độ N" + userLevel + "\"}");
+                    return;
+                }
+
+                if (lesson.getContentPath() != null) {
+                    try (InputStream contentStream = getServletContext().getResourceAsStream("/" + lesson.getContentPath())) {
+                        if (contentStream != null) {
+                            lessonContent = new String(contentStream.readAllBytes(), StandardCharsets.UTF_8);
+                        }
                     }
                 }
             }
@@ -95,7 +109,7 @@ public class AIQuizServlet extends HttpServlet {
                 "2. Mỗi đáp án phải NGẮN GỌN (1-3 từ), KHÔNG dùng dấu / hoặc liệt kê nhiều nghĩa\n" +
                 "3. Trường answer phải COPY NGUYÊN VĂN một phần tử trong mảng options\n" +
                 "4. KHÔNG dùng nhãn A, B, C, D\n" +
-                "5. CHỈ trả về JSON, không nói gì thêm\n\n" +
+                "5. CHỈ trả về JSON, không nói gì thêm và đáp án đúng random ở 4 vị trí\n\n" +
                 "FORMAT:\n" +
                 "[{\"question\":\"câu hỏi\",\"options\":[\"opt1\",\"opt2\",\"opt3\",\"opt4\"],\"answer\":\"opt1\"}]\n\n" +
                 "VÍ DỤ ĐÚNG:\n" +

@@ -6,12 +6,22 @@
     String currentPage = request.getParameter("activePage");
     if (currentPage == null) currentPage = "";
     
+<<<<<<< HEAD
     // Avatar letter
     String navAvatarLetter = "U";
     String navUserName = "User";
     String navEmail = "";
     String navUsername = "";
     boolean navIsPremium = false;
+=======
+    // Avatar letter & state setup
+    String navAvatarLetter = "U";
+    String navUserName = "Guest";
+    String navEmail = "";
+    String navUsername = "";
+    boolean navIsPremium = false;
+    boolean isNavGuest = (navUser == null);
+>>>>>>> f88f49bbc623c4dcecf2fbf29b3238f8f6b4161b
     
     if (navUser != null) {
         navUserName = navUser.getFullName() != null ? navUser.getFullName() : "User";
@@ -60,7 +70,11 @@
                     </a>
                 </li>
                 <li>
+<<<<<<< HEAD
                     <a href="progress" class="nav-link <%= "progress".equals(currentPage) ? "active" : "" %>">
+=======
+                    <a href="progress.jsp" class="nav-link <%= "progress".equals(currentPage) ? "active" : "" %>">
+>>>>>>> f88f49bbc623c4dcecf2fbf29b3238f8f6b4161b
                         <span class="nav-icon">📊</span>
                         <span class="nav-text">Progress</span>
                     </a>
@@ -75,6 +89,7 @@
             
             <!-- Right Section -->
             <div class="navbar-right">
+<<<<<<< HEAD
                 <!-- Premium Button -->
                 <a href="premium.jsp" class="premium-btn <%= navIsPremium ? "is-premium" : "" %>">
                     <% if (navIsPremium) { %>
@@ -120,6 +135,61 @@
                         <span>🚪</span> Đăng xuất
                     </a>
                 </div>
+=======
+                <% if (isNavGuest) { %>
+                    <!-- Guest Actions -->
+                    <div style="display: flex; gap: 1rem;">
+                        <a href="login.jsp" class="nav-link" style="padding: 0.6rem 1.2rem; font-weight: 600;">Log In</a>
+                        <a href="register.jsp" class="premium-btn" style="color: #1a1a2e; background: linear-gradient(135deg, #ffb7c5, #ff6b81); border: none;">Sign Up</a>
+                    </div>
+                <% } else { %>
+                    <!-- Premium Button -->
+                    <a href="premium.jsp" class="premium-btn <%= navIsPremium ? "is-premium" : "" %>">
+                        <% if (navIsPremium) { %>
+                            <span class="premium-icon">👑</span>
+                            <span class="premium-text">Thay đổi gói</span>
+                        <% } else { %>
+                            <span class="premium-icon">⭐</span>
+                            <span class="premium-text">Nâng cấp</span>
+                        <% } %>
+                    </a>
+                    
+                    <!-- User Profile with Dropdown -->
+                    <div class="user-profile" id="userProfileBtn" onclick="toggleUserDropdown(event)">
+                        <div class="user-avatar <%= navIsPremium ? "premium" : "" %>">
+                            <span class="avatar-letter"><%= navAvatarLetter %></span>
+                            <% if (navIsPremium) { %>
+                                <span class="crown-badge">👑</span>
+                            <% } %>
+                        </div>
+                        <div class="user-info">
+                            <span class="user-name"><%= navUserName %></span>
+                            <span class="user-role"><%= navIsPremium ? "Premium Member" : "Free Member" %></span>
+                        </div>
+                        <span class="dropdown-arrow" id="dropdownArrow">▾</span>
+                    </div>
+                    
+                    <!-- User Dropdown Menu -->
+                    <div class="user-dropdown" id="userDropdown">
+                        <div class="dropdown-header">
+                            <div class="dropdown-avatar <%= navIsPremium ? "premium" : "" %>">
+                                <span><%= navAvatarLetter %></span>
+                            </div>
+                            <div class="dropdown-user-info">
+                                <span class="dropdown-name"><%= navUserName %></span>
+                                <span class="dropdown-email"><%= navEmail %></span>
+                            </div>
+                        </div>
+                        <div class="dropdown-divider"></div>
+                        <a href="profile" class="dropdown-item-link">
+                            <span>📝</span> Thông tin hồ sơ
+                        </a>
+                        <a href="logout" class="dropdown-logout">
+                            <span>🚪</span> Đăng xuất
+                        </a>
+                    </div>
+                <% } %>
+>>>>>>> f88f49bbc623c4dcecf2fbf29b3238f8f6b4161b
             </div>
         </div>
     </div>

@@ -1,6 +1,5 @@
 package com.japaneselearning.dao;
 
-
 import com.japaneselearning.model.Lesson;
 import com.japaneselearning.utils.DBConnection;
 import java.sql.Connection;
@@ -11,7 +10,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
 
 public class LessonDAO {
 
@@ -59,7 +57,8 @@ public class LessonDAO {
         List<Lesson> allLessons = getAllLessons();
         
         for (Lesson lesson : allLessons) {
-            String category = lesson.getName();
+            // Group by name + level so each card shows only one level
+            String category = lesson.getName() + " (" + lesson.getLevel() + ")";
             groupedLessons.computeIfAbsent(category, k -> new ArrayList<>()).add(lesson);
         }
         

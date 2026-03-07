@@ -50,11 +50,32 @@ public class LoginServlet extends HttpServlet {
             User user = dao.login(savedUsername, savedPassword);
 
             if (user != null) {
+<<<<<<< HEAD
+=======
+                if ("BANNED".equalsIgnoreCase(user.getStatus()) || "BAN".equalsIgnoreCase(user.getStatus())) {
+                    request.setAttribute("error", "Tài khoản của bạn đã bị khóa!");
+                    // Remove remember me cookies just in case
+                    Cookie cUser = new Cookie("rememberUser", "");
+                    cUser.setMaxAge(0);
+                    response.addCookie(cUser);
+                    Cookie cPass = new Cookie("rememberPass", "");
+                    cPass.setMaxAge(0);
+                    response.addCookie(cPass);
+                    request.getRequestDispatcher("login.jsp").forward(request, response);
+                    return;
+                }
+
+>>>>>>> f88f49bbc623c4dcecf2fbf29b3238f8f6b4161b
                 session = request.getSession();
                 session.setAttribute("user", user);
 
                 if ("ADMIN".equals(user.getRole())) {
                     response.sendRedirect("admin/home.jsp");
+<<<<<<< HEAD
+=======
+                } else if (user.getLevel() == 0) {
+                    response.sendRedirect("select-level");
+>>>>>>> f88f49bbc623c4dcecf2fbf29b3238f8f6b4161b
                 } else {
                     response.sendRedirect("home.jsp");
                 }
@@ -77,6 +98,15 @@ public class LoginServlet extends HttpServlet {
         User user = dao.login(username, password);
 
         if (user != null) {
+<<<<<<< HEAD
+=======
+            if ("BANNED".equalsIgnoreCase(user.getStatus()) || "BAN".equalsIgnoreCase(user.getStatus())) {
+                request.setAttribute("error", "Tài khoản của bạn đã bị khóa!");
+                request.getRequestDispatcher("login.jsp").forward(request, response);
+                return;
+            }
+
+>>>>>>> f88f49bbc623c4dcecf2fbf29b3238f8f6b4161b
             HttpSession session = request.getSession();
             session.setAttribute("user", user);
 
@@ -96,6 +126,11 @@ public class LoginServlet extends HttpServlet {
             // Phân quyền
             if ("ADMIN".equals(user.getRole())) {
                 response.sendRedirect("admin/home.jsp");
+<<<<<<< HEAD
+=======
+            } else if (user.getLevel() == 0) {
+                response.sendRedirect("select-level");
+>>>>>>> f88f49bbc623c4dcecf2fbf29b3238f8f6b4161b
             } else {
                 response.sendRedirect("home.jsp");
             }

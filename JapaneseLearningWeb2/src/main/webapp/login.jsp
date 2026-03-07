@@ -53,7 +53,10 @@
             </div>
 
             <div class="input-group">
-                <label for="password">Password / パスワード</label>
+                <label for="password" style="display: flex; justify-content: space-between;">
+                    <span>Password / パスワード</span>
+                    <a href="forgot-password" style="font-size: 0.9rem; font-weight: 600; color: #ffffff; text-decoration: underline; text-shadow: 1px 1px 3px rgba(0,0,0,0.8);">Quên mật khẩu?</a>
+                </label>
                 <div class="password-wrapper">
                     <input type="password" id="password" name="password" required placeholder="••••••••">
                     <button type="button" class="toggle-password" onclick="togglePassword('password', this)" title="Hiện/Ẩn mật khẩu">

@@ -1,9 +1,4 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.japaneselearning.dao;
-
 
 
 import com.japaneselearning.model.User;
@@ -17,7 +12,7 @@ public class UserDAO {
     // Đăng ký
     public boolean register(User user) {
         String sql = "INSERT INTO users(username, password, email, full_name, level, role, status) "
-                   + "VALUES (?, ?, ?, ?,5, 'USER', 'ACTIVE')";
+                   + "VALUES (?, ?, ?, ?, 0, 'USER', 'ACTIVE')";
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -36,7 +31,7 @@ public class UserDAO {
 
     // Đăng nhập
     public User login(String username, String password) {
-        String sql = "SELECT * FROM users WHERE username=? AND password=? AND status='ACTIVE'";
+        String sql = "SELECT * FROM users WHERE username=? AND password=? AND (status='ACTIVE' OR status='BANNED' OR status='BAN')";
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -56,7 +51,7 @@ public class UserDAO {
 
     // Tìm user theo Google ID
     public User findByGoogleId(String googleId) {
-        String sql = "SELECT * FROM users WHERE google_id=? AND status='ACTIVE'";
+        String sql = "SELECT * FROM users WHERE google_id=? AND (status='ACTIVE' OR status='BANNED' OR status='BAN')";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
@@ -74,7 +69,7 @@ public class UserDAO {
     // Đăng ký user từ Google (không có password)
     public User registerGoogleUser(String googleId, String email, String fullName) {
         String sql = "INSERT INTO users(username, password, email, full_name, level, role, status, google_id) "
-                   + "VALUES (?, '', ?, ?,5, 'USER', 'ACTIVE', ?)";
+                   + "VALUES (?, '', ?, ?, 0, 'USER', 'ACTIVE', ?)";
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
@@ -121,6 +116,52 @@ public class UserDAO {
 
             ps.setString(1, username);
             return ps.executeQuery().next();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    // Kiểm tra email tồn tại
+    public boolean isEmailExist(String email) {
+        String sql = "SELECT id FROM users WHERE email=?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, email);
+            return ps.executeQuery().next();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    // Tìm user theo email
+    public User findByEmail(String email) {
+        String sql = "SELECT * FROM users WHERE email=? AND (status='ACTIVE' OR status='BANNED' OR status='BAN')";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, email);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return mapResultSetToUser(rs);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    // Cập nhật mật khẩu bằng email
+    public boolean updatePasswordByEmail(String email, String newPassword) {
+        String sql = "UPDATE users SET password=? WHERE email=?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, newPassword);
+            ps.setString(2, email);
+            return ps.executeUpdate() > 0;
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -210,10 +251,16 @@ public class UserDAO {
         u.setUsername(rs.getString("username"));
         u.setEmail(rs.getString("email"));
         u.setFullName(rs.getString("full_name"));
-        u.setLevel(rs.getInt("level"));
         u.setRole(rs.getString("role"));
         u.setStatus(rs.getString("status"));
         u.setCreatedAt(rs.getTimestamp("created_at"));
+        
+        // Level field
+        try {
+            u.setLevel(rs.getInt("level"));
+        } catch (Exception e) {
+            u.setLevel(0);
+        }
         
         // Premium fields (với null check cho cột mới)
         try {
@@ -233,6 +280,22 @@ public class UserDAO {
         }
         
         return u;
+    }
+
+    /**
+     * Cập nhật level cho user (N5=5, N4=4, N3=3, N2=2, N1=1)
+     */
+    public boolean updateUserLevel(int userId, int level) {
+        String sql = "UPDATE users SET level=? WHERE id=?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, level);
+            ps.setInt(2, userId);
+            return ps.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
     // --- ADMIN METHODS ---
@@ -337,7 +400,7 @@ public class UserDAO {
      */
     public boolean deleteUser(int userId) {
         String deletePayments = "DELETE FROM payments WHERE user_id = ?";
-        String deleteUser = "DELETE FROM users WHERE user_id = ?";
+        String deleteUser = "DELETE FROM users WHERE id = ?";
         try (Connection conn = DBConnection.getConnection()) {
             // Xoá payments liên quan
             try (PreparedStatement ps = conn.prepareStatement(deletePayments)) {

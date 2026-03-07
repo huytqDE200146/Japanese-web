@@ -9,6 +9,11 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+<<<<<<< HEAD
+=======
+import jakarta.servlet.http.HttpSession;
+
+>>>>>>> f88f49bbc623c4dcecf2fbf29b3238f8f6b4161b
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -43,6 +48,27 @@ public class LessonDetailServlet extends HttpServlet {
                 return;
             }
 
+<<<<<<< HEAD
+=======
+            // Check access control
+            HttpSession session = request.getSession(false);
+            if (session != null && session.getAttribute("user") != null) {
+                com.japaneselearning.model.User user = (com.japaneselearning.model.User) session.getAttribute("user");
+                boolean isPremium = user.hasPremiumAccess();
+                int userLevel = user.getLevel();
+                int lessonLevel = Integer.parseInt(lesson.getLevel().substring(1)); // e.g., "N5" -> 5
+
+                if (!isPremium && lessonLevel != userLevel) {
+                    session.setAttribute("error", "Bạn phải nâng cấp Premium để học bài viết ngoài trình độ N" + userLevel);
+                    response.sendRedirect("premium.jsp");
+                    return;
+                }
+            } else {
+                response.sendRedirect("login.jsp");
+                return;
+            }
+
+>>>>>>> f88f49bbc623c4dcecf2fbf29b3238f8f6b4161b
             // Read lesson content from file
             String content;
             try (InputStream is = getServletContext()
