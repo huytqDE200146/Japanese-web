@@ -1,6 +1,5 @@
 package com.japaneselearning.dao;
 
-<<<<<<< HEAD
 import com.japaneselearning.model.Progress;
 import com.japaneselearning.utils.DBConnection;
 
@@ -10,12 +9,10 @@ import java.time.LocalDate;
 public class ProgressDAO {
 
     // ==============================
-    // LẤY PROGRESS
+    // LẤY PROGRESS NGƯỜI DÙNG
     // ==============================
     public Progress getProgressByUserId(int userId) {
-
         String sql = "SELECT * FROM user_progress WHERE user_id = ?";
-
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
@@ -34,85 +31,64 @@ public class ProgressDAO {
                 if (date != null) {
                     p.setLastStudyDate(date.toLocalDate());
                 }
-
                 return p;
             }
-
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         return null;
     }
 
     // ==============================
-    // TĂNG LESSON
+    // CẬP NHẬT TỔNG SỐ BÀI HỌC/QUIZ
     // ==============================
     public void increaseTotalLesson(int userId) {
         String sql = "UPDATE user_progress SET total_lessons = total_lessons + 1 WHERE user_id = ?";
-
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
-
             ps.setInt(1, userId);
             ps.executeUpdate();
-
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    // ==============================
-    // TĂNG QUIZ
-    // ==============================
     public void increaseTotalQuiz(int userId) {
         String sql = "UPDATE user_progress SET total_quizzes = total_quizzes + 1 WHERE user_id = ?";
-
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
-
             ps.setInt(1, userId);
             ps.executeUpdate();
-
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     // ==============================
-    // LOGIC STREAK (CHỈ XỬ LÝ LOGIC)
+    // LOGIC TÍNH TOÁN CHUỖI NGÀY HỌC (STREAK)
     // ==============================
     public void calculateStreak(Progress progress) {
-
         LocalDate today = LocalDate.now();
         LocalDate yesterday = today.minusDays(1);
         LocalDate lastDate = progress.getLastStudyDate();
 
         if (lastDate == null) {
             progress.setStreak(1);
-        }
-        else if (lastDate.isEqual(today)) {
-            return; // đã học hôm nay rồi
-        }
-        else if (lastDate.isEqual(yesterday)) {
+        } else if (lastDate.isEqual(today)) {
+            return; // Đã học hôm nay rồi, không cần tính lại
+        } else if (lastDate.isEqual(yesterday)) {
             progress.setStreak(progress.getStreak() + 1);
-        }
-        else {
+        } else {
             progress.setStreak(1);
         }
 
         progress.setLastStudyDate(today);
-
         if (progress.getStreak() > progress.getLongestStreak()) {
             progress.setLongestStreak(progress.getStreak());
         }
     }
 
-    // ==============================
-    // UPDATE FULL PROGRESS
-    // ==============================
     public void updateProgress(Progress progress) {
-
         String sql = "UPDATE user_progress "
                 + "SET streak = ?, longest_streak = ?, total_lessons = ?, total_quizzes = ?, last_study_date = ? "
                 + "WHERE user_id = ?";
@@ -132,75 +108,41 @@ public class ProgressDAO {
             }
 
             ps.setInt(6, progress.getUserId());
-
             ps.executeUpdate();
-
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     // ==============================
-    // THỐNG KÊ
+    // THỐNG KÊ TIẾN ĐỘ THEO LEVEL
     // ==============================
     public int countCompletedLessons(int userId) {
-
+        // Đã đổi sang đọc từ bảng lesson_progress như đã thống nhất
         String sql = "SELECT COUNT(*) FROM lesson_progress WHERE user_id = ? AND completed = 1";
-=======
-import com.japaneselearning.utils.DBConnection;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-
-public class ProgressDAO {
-
-    public int countCompletedLessons(int userId) {
-        String sql = "SELECT COUNT(*) "
-                + "FROM progress "
-                + "WHERE user_id = ? AND completed = 1";
->>>>>>> f88f49bbc623c4dcecf2fbf29b3238f8f6b4161b
-
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
-
             ps.setInt(1, userId);
             ResultSet rs = ps.executeQuery();
-
-            if (rs.next()) {
-                return rs.getInt(1);
-            }
-
+            if (rs.next()) return rs.getInt(1);
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         return 0;
     }
 
     public int countTotalLessons() {
-<<<<<<< HEAD
-
         String sql = "SELECT COUNT(*) FROM lesson";
-=======
-        String sql = "SELECT COUNT(*) FROM lessons";
->>>>>>> f88f49bbc623c4dcecf2fbf29b3238f8f6b4161b
-
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
-
-            if (rs.next()) {
-                return rs.getInt(1);
-            }
-
+            if (rs.next()) return rs.getInt(1);
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         return 0;
     }
-<<<<<<< HEAD
-    
+
     public int countTotalLessonsByLevel(String level) {
         String sql = "SELECT COUNT(*) FROM lesson WHERE level = ?";
         try (Connection conn = DBConnection.getConnection();
@@ -208,10 +150,12 @@ public class ProgressDAO {
             ps.setString(1, level);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) return rs.getInt(1);
-        } catch (Exception e) { e.printStackTrace(); }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return 0;
     }
-    
+
     public int countCompletedLessonsByLevel(int userId, String level) {
         String sql = "SELECT COUNT(*) FROM lesson_progress lp " +
                      "JOIN lesson l ON lp.lesson_id = l.lesson_id " +
@@ -222,9 +166,9 @@ public class ProgressDAO {
             ps.setString(2, level);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) return rs.getInt(1);
-        } catch (Exception e) { e.printStackTrace(); }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return 0;
     }
-=======
->>>>>>> f88f49bbc623c4dcecf2fbf29b3238f8f6b4161b
 }

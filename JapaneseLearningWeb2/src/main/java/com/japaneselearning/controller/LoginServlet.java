@@ -50,11 +50,10 @@ public class LoginServlet extends HttpServlet {
             User user = dao.login(savedUsername, savedPassword);
 
             if (user != null) {
-<<<<<<< HEAD
-=======
+                // Kiểm tra tài khoản bị khóa
                 if ("BANNED".equalsIgnoreCase(user.getStatus()) || "BAN".equalsIgnoreCase(user.getStatus())) {
                     request.setAttribute("error", "Tài khoản của bạn đã bị khóa!");
-                    // Remove remember me cookies just in case
+                    // Xóa cookie cũ để không bị lặp lại lỗi
                     Cookie cUser = new Cookie("rememberUser", "");
                     cUser.setMaxAge(0);
                     response.addCookie(cUser);
@@ -65,17 +64,14 @@ public class LoginServlet extends HttpServlet {
                     return;
                 }
 
->>>>>>> f88f49bbc623c4dcecf2fbf29b3238f8f6b4161b
                 session = request.getSession();
                 session.setAttribute("user", user);
 
+                // Phân quyền chuyển hướng
                 if ("ADMIN".equals(user.getRole())) {
                     response.sendRedirect("admin/home.jsp");
-<<<<<<< HEAD
-=======
                 } else if (user.getLevel() == 0) {
                     response.sendRedirect("select-level");
->>>>>>> f88f49bbc623c4dcecf2fbf29b3238f8f6b4161b
                 } else {
                     response.sendRedirect("home.jsp");
                 }
@@ -98,19 +94,17 @@ public class LoginServlet extends HttpServlet {
         User user = dao.login(username, password);
 
         if (user != null) {
-<<<<<<< HEAD
-=======
+            // Kiểm tra trạng thái tài khoản
             if ("BANNED".equalsIgnoreCase(user.getStatus()) || "BAN".equalsIgnoreCase(user.getStatus())) {
                 request.setAttribute("error", "Tài khoản của bạn đã bị khóa!");
                 request.getRequestDispatcher("login.jsp").forward(request, response);
                 return;
             }
 
->>>>>>> f88f49bbc623c4dcecf2fbf29b3238f8f6b4161b
             HttpSession session = request.getSession();
             session.setAttribute("user", user);
 
-            // Lưu cookie nếu tick "Ghi nhớ đăng nhập"
+            // Lưu cookie nếu người dùng chọn "Ghi nhớ đăng nhập"
             if ("on".equals(remember)) {
                 Cookie userCookie = new Cookie("rememberUser", username);
                 userCookie.setMaxAge(COOKIE_MAX_AGE);
@@ -123,14 +117,11 @@ public class LoginServlet extends HttpServlet {
                 response.addCookie(passCookie);
             }
 
-            // Phân quyền
+            // Phân quyền chuyển hướng người dùng
             if ("ADMIN".equals(user.getRole())) {
                 response.sendRedirect("admin/home.jsp");
-<<<<<<< HEAD
-=======
             } else if (user.getLevel() == 0) {
                 response.sendRedirect("select-level");
->>>>>>> f88f49bbc623c4dcecf2fbf29b3238f8f6b4161b
             } else {
                 response.sendRedirect("home.jsp");
             }

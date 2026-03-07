@@ -2,13 +2,11 @@ package com.japaneselearning.controller;
 
 import com.japaneselearning.dao.UserDAO;
 import com.japaneselearning.model.User;
-
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
 import java.io.IOException;
 
 @WebServlet("/register")
@@ -30,7 +28,7 @@ public class RegisterServlet extends HttpServlet {
         String email = request.getParameter("email");
         String fullName = request.getParameter("fullName");
 
-        // Validate
+        // Validate đầu vào
         if (username == null || username.trim().isEmpty() ||
             password == null || password.trim().isEmpty() ||
             email == null || email.trim().isEmpty() ||
@@ -40,13 +38,9 @@ public class RegisterServlet extends HttpServlet {
             return;
         }
 
-<<<<<<< HEAD
-        if (password.length() < 6) {
-            request.setAttribute("error", "Mật khẩu phải có ít nhất 6 ký tự!");
-=======
+        // Logic bảo mật mật khẩu (Yêu cầu 8 ký tự, có số, chữ hoa, chữ thường)
         if (password.length() < 8 || !password.matches(".*\\d.*") || !password.matches(".*[a-z].*") || !password.matches(".*[A-Z].*")) {
-            request.setAttribute("error", "Mật khẩu chưa đáp ứng yêu cầu bảo mật!");
->>>>>>> f88f49bbc623c4dcecf2fbf29b3238f8f6b4161b
+            request.setAttribute("error", "Mật khẩu chưa đáp ứng yêu cầu bảo mật (tối thiểu 8 ký tự, gồm chữ hoa, chữ thường và số)!");
             request.getRequestDispatcher("register.jsp").forward(request, response);
             return;
         }
@@ -65,16 +59,6 @@ public class RegisterServlet extends HttpServlet {
             return;
         }
 
-<<<<<<< HEAD
-        User user = new User(username.trim(), password, email.trim(), fullName.trim());
-        boolean success = dao.register(user);
-
-        if (success) {
-            request.setAttribute("success", "Đăng ký thành công! Vui lòng đăng nhập.");
-            request.getRequestDispatcher("login.jsp").forward(request, response);
-        } else {
-            request.setAttribute("error", "Đăng ký thất bại. Vui lòng thử lại!");
-=======
         if (dao.isEmailExist(email.trim())) {
             request.setAttribute("error", "Email đã được sử dụng!");
             request.getRequestDispatcher("register.jsp").forward(request, response);
@@ -83,15 +67,14 @@ public class RegisterServlet extends HttpServlet {
 
         User user = new User(username.trim(), password, email.trim(), fullName.trim());
         
-        // Generate Token
+        // Tạo Token để xác thực qua email
         String token = java.util.UUID.randomUUID().toString();
         
-        // Save to TokenStore
+        // Lưu thông tin tạm thời vào TokenStore
         com.japaneselearning.utils.TokenStore.getInstance().storeUser(token, user);
         
-        // Send email
         try {
-            // Dựng URL tuyệt đối cho website dựa theo request hiện tại
+            // Dựng link xác thực dựa theo request hiện tại
             String scheme = request.getScheme(); 
             String serverName = request.getServerName();
             int serverPort = request.getServerPort();
@@ -118,9 +101,10 @@ public class RegisterServlet extends HttpServlet {
                            + "&copy; 2026 Japanese Learning Team. All rights reserved."
                            + "</div>"
                            + "</div>";
+            
             com.japaneselearning.utils.EmailUtility.sendEmail(user.getEmail(), subject, content);
             
-            // Xóa session OTP cũ nếu có
+            // Xóa session OTP cũ nếu có để dọn dẹp
             jakarta.servlet.http.HttpSession session = request.getSession();
             session.removeAttribute("registerUser");
             session.removeAttribute("registerOTP");
@@ -128,10 +112,8 @@ public class RegisterServlet extends HttpServlet {
             response.sendRedirect("verify-register.jsp");
         } catch (Exception e) {
             e.printStackTrace();
-            // Xóa token nếu gửi mail lỗi
             com.japaneselearning.utils.TokenStore.getInstance().removeUser(token);
-            request.setAttribute("error", "Lỗi khi gửi email xác thực. Vui lòng kiểm tra lại email hoặc thử lại sau.");
->>>>>>> f88f49bbc623c4dcecf2fbf29b3238f8f6b4161b
+            request.setAttribute("error", "Lỗi khi gửi email xác thực. Vui lòng thử lại sau.");
             request.getRequestDispatcher("register.jsp").forward(request, response);
         }
     }

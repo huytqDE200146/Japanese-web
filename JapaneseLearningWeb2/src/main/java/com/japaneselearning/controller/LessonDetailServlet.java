@@ -2,18 +2,14 @@ package com.japaneselearning.controller;
 
 import com.japaneselearning.dao.LessonDAO;
 import com.japaneselearning.model.Lesson;
-
+import com.japaneselearning.model.User;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
-<<<<<<< HEAD
-=======
 import jakarta.servlet.http.HttpSession;
 
->>>>>>> f88f49bbc623c4dcecf2fbf29b3238f8f6b4161b
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -48,15 +44,14 @@ public class LessonDetailServlet extends HttpServlet {
                 return;
             }
 
-<<<<<<< HEAD
-=======
-            // Check access control
+            // Kiểm soát truy cập: Chỉ cho phép đúng Level hoặc Premium
             HttpSession session = request.getSession(false);
             if (session != null && session.getAttribute("user") != null) {
-                com.japaneselearning.model.User user = (com.japaneselearning.model.User) session.getAttribute("user");
+                User user = (User) session.getAttribute("user");
                 boolean isPremium = user.hasPremiumAccess();
                 int userLevel = user.getLevel();
-                int lessonLevel = Integer.parseInt(lesson.getLevel().substring(1)); // e.g., "N5" -> 5
+                // Phân tích level từ "N5" -> 5
+                int lessonLevel = Integer.parseInt(lesson.getLevel().substring(1)); 
 
                 if (!isPremium && lessonLevel != userLevel) {
                     session.setAttribute("error", "Bạn phải nâng cấp Premium để học bài viết ngoài trình độ N" + userLevel);
@@ -68,8 +63,7 @@ public class LessonDetailServlet extends HttpServlet {
                 return;
             }
 
->>>>>>> f88f49bbc623c4dcecf2fbf29b3238f8f6b4161b
-            // Read lesson content from file
+            // Đọc nội dung bài học từ file HTML
             String content;
             try (InputStream is = getServletContext()
                     .getResourceAsStream("/" + lesson.getContentPath())) {
@@ -81,12 +75,11 @@ public class LessonDetailServlet extends HttpServlet {
                 }
             }
 
-            // Get adjacent lessons for navigation
+            // Lấy thông tin bài học trước và sau để điều hướng
             int[] adjacentIds = lessonDAO.getAdjacentLessonIds(id);
             int prevId = adjacentIds[0];
             int nextId = adjacentIds[1];
             
-            // Get lesson names for navigation display
             Lesson prevLesson = prevId != -1 ? lessonDAO.getLessonById(prevId) : null;
             Lesson nextLesson = nextId != -1 ? lessonDAO.getLessonById(nextId) : null;
 

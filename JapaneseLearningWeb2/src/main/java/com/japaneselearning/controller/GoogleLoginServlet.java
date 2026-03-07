@@ -2,7 +2,6 @@ package com.japaneselearning.controller;
 
 import com.japaneselearning.dao.UserDAO;
 import com.japaneselearning.model.User;
-
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.http.javanet.NetHttpTransport;
@@ -21,10 +20,6 @@ import java.util.Collections;
 @WebServlet("/google-login")
 public class GoogleLoginServlet extends HttpServlet {
 
-<<<<<<< HEAD
-    // TODO: Thay bằng Google Client ID của bạn từ Google Cloud Console
-=======
->>>>>>> f88f49bbc623c4dcecf2fbf29b3238f8f6b4161b
     private static final String GOOGLE_CLIENT_ID = "912023989681-0fehc1j8pvssrm274qgetn523c92aik9.apps.googleusercontent.com";
 
     @Override
@@ -61,10 +56,6 @@ public class GoogleLoginServlet extends HttpServlet {
                 User user = dao.findByGoogleId(googleId);
 
                 if (user == null) {
-<<<<<<< HEAD
-                    // Chưa có tài khoản → tự động đăng ký
-                    user = dao.registerGoogleUser(googleId, email, fullName);
-=======
                     // Chưa có tài khoản → Tạo token gửi xác thực thay vì đăng ký luôn
                     user = new User();
                     // Dùng email làm username tạm (loại bỏ @...)
@@ -118,7 +109,6 @@ public class GoogleLoginServlet extends HttpServlet {
                         request.getRequestDispatcher("login.jsp").forward(request, response);
                         return;
                     }
->>>>>>> f88f49bbc623c4dcecf2fbf29b3238f8f6b4161b
                 }
 
                 if (user != null) {
@@ -128,11 +118,8 @@ public class GoogleLoginServlet extends HttpServlet {
                     // Phân quyền
                     if ("ADMIN".equals(user.getRole())) {
                         response.sendRedirect("admin/home.jsp");
-<<<<<<< HEAD
-=======
                     } else if (user.getLevel() == 0) {
                         response.sendRedirect("select-level");
->>>>>>> f88f49bbc623c4dcecf2fbf29b3238f8f6b4161b
                     } else {
                         response.sendRedirect("home.jsp");
                     }
