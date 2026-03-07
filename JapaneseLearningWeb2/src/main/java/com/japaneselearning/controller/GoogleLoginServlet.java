@@ -57,8 +57,47 @@ public class GoogleLoginServlet extends HttpServlet {
                 User user = dao.findByGoogleId(googleId);
 
                 if (user == null) {
-                    // Chưa có tài khoản → tự động đăng ký
-                    user = dao.registerGoogleUser(googleId, email, fullName);
+                    // Chưa có tài khoản → Tạo token gửi xác thực thay vì đăng ký luôn
+                    user = new User();
+                    // Dùng email làm username tạm (loại bỏ @...)
+                    user.setUsername(email.split("@")[0]);
+                    user.setEmail(email);
+                    user.setFullName(fullName);
+                    user.setGoogleId(googleId);
+                    user.setPassword(""); // Không cần password cho Google login
+
+                    // Generate Token
+                    String token = java.util.UUID.randomUUID().toString();
+                    com.japaneselearning.utils.TokenStore.getInstance().storeUser(token, user);
+
+                    // Send email
+                    try {
+                        String scheme = request.getScheme(); 
+                        String serverName = request.getServerName();
+                        int serverPort = request.getServerPort();
+                        String contextPath = request.getContextPath();
+                        String appBaseUrl = scheme + "://" + serverName + ":" + serverPort + contextPath;
+                        String verifyLink = appBaseUrl + "/verify-register?token=" + token;
+
+                        String subject = "Xác nhận đăng ký tài khoản qua Google";
+                        String content = "Chào " + fullName + ",<br><br>"
+                                       + "Cảm ơn bạn đã đăng nhập qua Google tại Japanese Learning.<br>"
+                                       + "Để hoàn tất việc tạo tài khoản, vui lòng click vào đường link bên dưới:<br><br>"
+                                       + "<a href='" + verifyLink + "' style='display:inline-block;padding:10px 20px;color:#fff;background-color:#007bff;text-decoration:none;border-radius:5px;'>Hoàn Tất Đăng Ký</a><br><br>"
+                                       + "Hoặc bạn cũng có thể copy link này vào trình duyệt: <br>" + verifyLink + "<br><br>"
+                                       + "Trân trọng,<br>Japanese Learning Team";
+                        
+                        com.japaneselearning.utils.EmailUtility.sendEmail(email, subject, content);
+                        
+                        response.sendRedirect("verify-register.jsp");
+                        return;
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        com.japaneselearning.utils.TokenStore.getInstance().removeUser(token);
+                        request.setAttribute("error", "Lỗi khi gửi email xác thực. Vui lòng thử lại sau.");
+                        request.getRequestDispatcher("login.jsp").forward(request, response);
+                        return;
+                    }
                 }
 
                 if (user != null) {

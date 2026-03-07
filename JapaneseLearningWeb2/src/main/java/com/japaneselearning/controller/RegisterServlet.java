@@ -60,14 +60,50 @@ public class RegisterServlet extends HttpServlet {
             return;
         }
 
-        User user = new User(username.trim(), password, email.trim(), fullName.trim());
-        boolean success = dao.register(user);
+        if (dao.isEmailExist(email.trim())) {
+            request.setAttribute("error", "Email đã được sử dụng!");
+            request.getRequestDispatcher("register.jsp").forward(request, response);
+            return;
+        }
 
-        if (success) {
-            request.setAttribute("success", "Đăng ký thành công! Vui lòng đăng nhập.");
-            request.getRequestDispatcher("login.jsp").forward(request, response);
-        } else {
-            request.setAttribute("error", "Đăng ký thất bại. Vui lòng thử lại!");
+        User user = new User(username.trim(), password, email.trim(), fullName.trim());
+        
+        // Generate Token
+        String token = java.util.UUID.randomUUID().toString();
+        
+        // Save to TokenStore
+        com.japaneselearning.utils.TokenStore.getInstance().storeUser(token, user);
+        
+        // Send email
+        try {
+            // Dựng URL tuyệt đối cho website dựa theo request hiện tại
+            String scheme = request.getScheme(); 
+            String serverName = request.getServerName();
+            int serverPort = request.getServerPort();
+            String contextPath = request.getContextPath();
+            String appBaseUrl = scheme + "://" + serverName + ":" + serverPort + contextPath;
+            String verifyLink = appBaseUrl + "/verify-register?token=" + token;
+
+            String subject = "Xác nhận đăng ký tài khoản";
+            String content = "Chào " + user.getFullName() + ",<br><br>"
+                           + "Cảm ơn bạn đã đăng ký tài khoản tại Japanese Learning.<br>"
+                           + "Vui lòng click vào đường link bên dưới để xác thực email và kích hoạt tài khoản của bạn:<br><br>"
+                           + "<a href='" + verifyLink + "' style='display:inline-block;padding:10px 20px;color:#fff;background-color:#007bff;text-decoration:none;border-radius:5px;'>Xác Thực Tài Khoản</a><br><br>"
+                           + "Hoặc bạn cũng có thể copy link này vào trình duyệt: <br>" + verifyLink + "<br><br>"
+                           + "Trân trọng,<br>Japanese Learning Team";
+            com.japaneselearning.utils.EmailUtility.sendEmail(user.getEmail(), subject, content);
+            
+            // Xóa session OTP cũ nếu có
+            jakarta.servlet.http.HttpSession session = request.getSession();
+            session.removeAttribute("registerUser");
+            session.removeAttribute("registerOTP");
+
+            response.sendRedirect("verify-register.jsp");
+        } catch (Exception e) {
+            e.printStackTrace();
+            // Xóa token nếu gửi mail lỗi
+            com.japaneselearning.utils.TokenStore.getInstance().removeUser(token);
+            request.setAttribute("error", "Lỗi khi gửi email xác thực. Vui lòng kiểm tra lại email hoặc thử lại sau.");
             request.getRequestDispatcher("register.jsp").forward(request, response);
         }
     }
