@@ -57,7 +57,7 @@ GO
 -- Dữ liệu mẫu lessons
 INSERT INTO lesson (name, level, description, content_path) VALUES
 -- Hiragana
-(N'Hiragana cơ bản', 'N5', N'Học bảng chữ cái Hiragana cơ bản', N'lessons/n5/hiragana.html'),
+(N'Hiragana cơ bản', 'N5', N'Học bảng chữ cái Hiragana', N'lessons/n5/hiragana.html'),
 
 -- Katakana
 (N'Katakana cơ bản', 'N5', N'Học bảng chữ cái Katakana', N'lessons/n5/katakana.html'),
@@ -269,3 +269,53 @@ CREATE TABLE lesson_progress (
     CONSTRAINT FK_lesson_progress_lesson 
         FOREIGN KEY (lesson_id) REFERENCES lesson(lesson_id)
 );
+
+
+DECLARE @HuyId INT, @NamId INT;
+SELECT @HuyId = id FROM users WHERE username = 'huy01';
+SELECT @NamId = id FROM users WHERE username = 'nam03';
+
+-- 3. CHÈN CHO HUY (Học tất cả bài học)
+IF @HuyId IS NOT NULL
+BEGIN
+    INSERT INTO lesson_progress (user_id, lesson_id, completed, completed_date)
+    SELECT @HuyId, lesson_id, 1, GETDATE() FROM lesson;
+
+    INSERT INTO user_progress (user_id, streak, longest_streak, total_lessons, total_quizzes, last_study_date)
+    VALUES (@HuyId, 30, 30, (SELECT COUNT(*) FROM lesson), 10, GETDATE());
+END
+
+-- 4. CHÈN CHO NAM (Chỉ học các bài N5)
+IF @NamId IS NOT NULL
+BEGIN
+    INSERT INTO lesson_progress (user_id, lesson_id, completed, completed_date)
+    SELECT @NamId, lesson_id, 1, GETDATE() 
+    FROM lesson WHERE level = 'N5';
+
+    INSERT INTO user_progress (user_id, streak, longest_streak, total_lessons, total_quizzes, last_study_date)
+    VALUES (@NamId, 5, 5, (SELECT COUNT(*) FROM lesson WHERE level = 'N5'), 2, GETDATE());
+END
+GO
+
+
+DECLARE @TestUser VARCHAR(50) = 'nam03';
+DECLARE @UserId INT = (SELECT id FROM users WHERE username = @TestUser);
+
+-- 1. Reset level của nam03 về 5 (N5)
+UPDATE users SET level = 5 WHERE id = @UserId;
+
+-- 2. Xóa sạch tiến độ cũ để test lại từ đầu
+DELETE FROM lesson_progress WHERE user_id = @UserId;
+DELETE FROM user_progress WHERE user_id = @UserId;
+
+-- 3. Tìm bài N5 đầu tiên (Sẽ để dành bài này để test trên Web)
+DECLARE @LastLessonToTest INT = (SELECT TOP 1 lesson_id FROM lesson WHERE level = 'N5' ORDER BY lesson_id ASC);
+
+-- 4. Đánh dấu hoàn thành toàn bộ N5 NGOẠI TRỪ bài đầu tiên
+INSERT INTO lesson_progress (user_id, lesson_id, completed, completed_date)
+SELECT @UserId, lesson_id, 1, GETDATE() 
+FROM lesson 
+WHERE level = 'N5' AND lesson_id != @LastLessonToTest;
+
+PRINT 'Da chuan bi xong du lieu!';
+PRINT 'Bai N5 BẠN CẦN BẤM HOÀN THÀNH TRÊN WEB LA ID: ' + CAST(@LastLessonToTest AS VARCHAR);
