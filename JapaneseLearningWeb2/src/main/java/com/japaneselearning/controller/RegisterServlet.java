@@ -84,13 +84,25 @@ public class RegisterServlet extends HttpServlet {
             String appBaseUrl = scheme + "://" + serverName + ":" + serverPort + contextPath;
             String verifyLink = appBaseUrl + "/verify-register?token=" + token;
 
-            String subject = "Xác nhận đăng ký tài khoản";
-            String content = "Chào " + user.getFullName() + ",<br><br>"
-                           + "Cảm ơn bạn đã đăng ký tài khoản tại Japanese Learning.<br>"
-                           + "Vui lòng click vào đường link bên dưới để xác thực email và kích hoạt tài khoản của bạn:<br><br>"
-                           + "<a href='" + verifyLink + "' style='display:inline-block;padding:10px 20px;color:#fff;background-color:#007bff;text-decoration:none;border-radius:5px;'>Xác Thực Tài Khoản</a><br><br>"
-                           + "Hoặc bạn cũng có thể copy link này vào trình duyệt: <br>" + verifyLink + "<br><br>"
-                           + "Trân trọng,<br>Japanese Learning Team";
+            String subject = "Xác nhận đăng ký tài khoản - Japanese Learning";
+            String content = "<div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f4f7f6; border-radius: 10px;'>"
+                           + "<div style='background-color: #ffffff; padding: 40px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); text-align: center;'>"
+                           + "<h2 style='color: #2c3e50; margin-top: 0; margin-bottom: 20px;'>Xác nhận tài khoản của bạn</h2>"
+                           + "<p style='color: #555555; font-size: 16px; line-height: 1.6; margin-bottom: 30px; text-align: left;'>"
+                           + "Chào <b>" + user.getFullName() + "</b>,<br><br>"
+                           + "Cảm ơn bạn đã tham gia khóa học tại <b>Japanese Learning</b>. Để hoàn tất quá trình đăng ký, vui lòng xác nhận địa chỉ email của bạn bằng cách nhấn vào nút bên dưới:"
+                           + "</p>"
+                           + "<a href='" + verifyLink + "' style='display: inline-block; padding: 14px 30px; color: #ffffff; background-color: #007bff; text-decoration: none; border-radius: 6px; font-weight: bold; font-size: 16px; letter-spacing: 0.5px; transition: background-color 0.3s;'>XÁC THỰC EMAIL</a>"
+                           + "<p style='color: #888888; font-size: 13px; margin-top: 30px; margin-bottom: 0; text-align: left;'>"
+                           + "Nếu nút trên không hoạt động, bạn có thể copy và dán đường dẫn này vào trình duyệt:<br>"
+                           + "<a href='" + verifyLink + "' style='color: #007bff; text-decoration: underline; word-break: break-all;'>" + verifyLink + "</a>"
+                           + "</p>"
+                           + "</div>"
+                           + "<div style='text-align: center; margin-top: 20px; color: #999999; font-size: 12px;'>"
+                           + "Nếu bạn không thực hiện yêu cầu này, vui lòng bỏ qua email này.<br><br>"
+                           + "&copy; 2026 Japanese Learning Team. All rights reserved."
+                           + "</div>"
+                           + "</div>";
             com.japaneselearning.utils.EmailUtility.sendEmail(user.getEmail(), subject, content);
             
             // Xóa session OTP cũ nếu có
