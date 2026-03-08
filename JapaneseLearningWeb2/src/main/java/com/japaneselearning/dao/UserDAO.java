@@ -300,9 +300,19 @@ public class UserDAO {
 
     public boolean deleteUser(int userId) {
         String deletePayments = "DELETE FROM payments WHERE user_id = ?";
+        String deleteLessonProgress = "DELETE FROM lesson_progress WHERE user_id = ?";
+        String deleteUserProgress = "DELETE FROM user_progress WHERE user_id = ?";
         String deleteUser = "DELETE FROM users WHERE id = ?";
         try (Connection conn = DBConnection.getConnection()) {
             try (PreparedStatement ps = conn.prepareStatement(deletePayments)) {
+                ps.setInt(1, userId);
+                ps.executeUpdate();
+            }
+            try (PreparedStatement ps = conn.prepareStatement(deleteLessonProgress)) {
+                ps.setInt(1, userId);
+                ps.executeUpdate();
+            }
+            try (PreparedStatement ps = conn.prepareStatement(deleteUserProgress)) {
                 ps.setInt(1, userId);
                 ps.executeUpdate();
             }

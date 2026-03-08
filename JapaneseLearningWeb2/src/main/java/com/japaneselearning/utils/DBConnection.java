@@ -10,7 +10,7 @@ public class DBConnection {
     private static final String USER = "sa";
     
     // Lưu ý: Thay đổi mật khẩu này cho đúng với cấu hình SQL Server trên máy bạn
-    private static final String PASSWORD = "1"; 
+    private static final String PASSWORD = "sa"; 
 
     public static Connection getConnection() {
         try {
