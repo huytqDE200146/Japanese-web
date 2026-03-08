@@ -64,8 +64,14 @@
                 </li>
                 <li>
                     <a href="ai-chat.jsp" class="nav-link <%= "ai-chat".equals(currentPage) ? "active" : "" %>">
-                        <span class="nav-icon">🤖</span>
+                        <span class="nav-icon">💬</span>
                         <span class="nav-text">AI Chat</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="ai-voice-practice.jsp" class="nav-link <%= "ai-voice".equals(currentPage) ? "active" : "" %>">
+                        <span class="nav-icon">🤖</span>
+                        <span class="nav-text">AI Voice</span>
                     </a>
                 </li>
             </ul>
@@ -143,7 +149,7 @@
 .navbar-container {
     max-width: 1400px;
     margin: 0 auto;
-    padding: 0 2rem;
+    padding: 0 1rem; /* Reduced from 2rem to give more room */
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -203,7 +209,7 @@
     align-items: center;
     flex: 1;
     justify-content: space-between;
-    margin-left: 3rem;
+    margin-left: 2rem; /* Reduced from 3rem */
 }
 
 .navbar-links {
@@ -220,7 +226,7 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    padding: 0.6rem 1rem;
+    padding: 0.6rem 0.8rem; /* Reduced padding from 1rem */
     border-radius: 12px;
     text-decoration: none;
     color: rgba(255, 255, 255, 0.7);
@@ -229,6 +235,7 @@
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     overflow: hidden;
+    white-space: nowrap;
 }
 .nav-link::before {
     content: '';
@@ -279,6 +286,7 @@
     background: linear-gradient(135deg, rgba(255, 215, 0, 0.15), rgba(255, 183, 0, 0.1));
     border: 1px solid rgba(255, 215, 0, 0.3);
     color: #ffd700;
+    white-space: nowrap;
 }
 .premium-btn:hover {
     background: linear-gradient(135deg, rgba(255, 215, 0, 0.25), rgba(255, 183, 0, 0.2));
@@ -382,10 +390,15 @@
     font-weight: 600;
     color: white;
     line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 130px; /* Truncate long names */
 }
 .user-role {
     font-size: 0.7rem;
     color: rgba(255, 255, 255, 0.5);
+    white-space: nowrap;
 }
 
 /* ===== User Dropdown ===== */

@@ -20,7 +20,7 @@ CREATE TABLE users (
     username VARCHAR(50) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
     email VARCHAR(100),
-    full_name VARCHAR(100),
+    full_name NVARCHAR(100),
     level INT NOT NULL DEFAULT 5,
     role VARCHAR(20) DEFAULT 'USER',
     status VARCHAR(20) DEFAULT 'ACTIVE',
@@ -231,18 +231,7 @@ SELECT * FROM subscription_plans;
 GO
 
 
--- =============================================
--- 3. BẢNG LESSON
--- =============================================
-CREATE TABLE progress (
-    id INT IDENTITY PRIMARY KEY,
-    user_id INT NOT NULL,
-    lesson_id INT NOT NULL,
-    completed BIT DEFAULT 0,
-    completed_at DATETIME NULL,
-    CONSTRAINT uq_user_lesson UNIQUE (user_id, lesson_id)
-);
-GO
+
 
 CREATE TABLE user_progress (
     user_id INT PRIMARY KEY,
