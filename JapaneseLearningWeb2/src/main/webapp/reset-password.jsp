@@ -98,7 +98,7 @@
                 <label for="newPassword">Mật khẩu mới</label>
                 <div class="password-wrapper">
                     <input type="password" id="newPassword" name="newPassword" required placeholder="••••••••" minlength="8">
-                    <button type="button" class="toggle-password" onclick="togglePassword('newPassword', this)">👁</button>
+                    <button type="button" class="toggle-password" onclick="togglePassword('newPassword', this)">🙉</button>
                 </div>
                 
                 <div class="password-reqs">
@@ -116,7 +116,7 @@
                 <label for="confirmPassword">Xác nhận mật khẩu</label>
                 <div class="password-wrapper">
                     <input type="password" id="confirmPassword" name="confirmPassword" required placeholder="••••••••">
-                    <button type="button" class="toggle-password" onclick="togglePassword('confirmPassword', this)">👁</button>
+                    <button type="button" class="toggle-password" onclick="togglePassword('confirmPassword', this)">🙉</button>
                 </div>
             </div>
 
@@ -193,7 +193,7 @@
                 btn.textContent = '🙈';
             } else {
                 input.type = 'password';
-                btn.textContent = '👁';
+                btn.textContent = '🙉';
             }
         }
     </script>

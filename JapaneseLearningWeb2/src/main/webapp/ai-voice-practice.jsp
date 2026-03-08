@@ -41,16 +41,22 @@
             font-family: 'Poppins', sans-serif;
             background: linear-gradient(135deg, var(--bg-color), var(--secondary-light));
             color: var(--text-main);
-            min-height: 100vh;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
         }
 
         .voice-container {
+            width: 100%;
             max-width: 1000px;
-            margin: 40px auto;
+            margin: 90px auto 20px auto; /* 70 Navbar height + 20 Gap */
             padding: 0 20px;
             display: grid;
             grid-template-columns: 320px 1fr;
             gap: 25px;
+            flex: 1;
+            min-height: 0;
         }
 
         /* ----- SIDEBAR SETTINGS ----- */
@@ -63,7 +69,8 @@
             display: flex;
             flex-direction: column;
             gap: 20px;
-            height: fit-content;
+            height: 100%;
+            overflow-y: auto;
         }
 
         .sidebar-title {
@@ -146,7 +153,7 @@
             backdrop-filter: blur(15px);
             border-radius: 20px;
             border: 1px solid rgba(255, 255, 255, 0.1);
-            height: calc(100vh - 120px);
+            height: 100%;
             overflow: hidden;
             position: relative;
         }
@@ -402,15 +409,26 @@
 
         /* Responsive */
         @media (max-width: 900px) {
+            body {
+                overflow: auto;
+                height: auto;
+                min-height: 100vh;
+            }
             .voice-container {
                 grid-template-columns: 1fr;
                 gap: 15px;
-                margin: 20px auto;
+                margin: 90px auto 20px auto;
+                padding: 0 15px;
+                display: flex;
+                flex-direction: column;
             }
             .sidebar {
                 border-radius: 15px;
+                height: auto;
             }
             .chat-area {
+                flex: 1;
+                min-height: 500px;
                 height: 60vh;
             }
         }

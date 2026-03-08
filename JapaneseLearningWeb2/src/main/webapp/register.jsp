@@ -115,7 +115,7 @@
                 <div class="password-wrapper">
                     <input type="password" id="password" name="password" required placeholder="••••••••" minlength="8">
                     <button type="button" class="toggle-password" onclick="togglePassword('password', this)" title="Hiện/Ẩn mật khẩu">
-                        👁
+                        🙉
                     </button>
                 </div>
                 <div class="password-reqs">
@@ -134,7 +134,7 @@
                 <div class="password-wrapper">
                     <input type="password" id="confirmPassword" name="confirmPassword" required placeholder="••••••••">
                     <button type="button" class="toggle-password" onclick="togglePassword('confirmPassword', this)" title="Hiện/Ẩn mật khẩu">
-                        👁
+                        🙉
                     </button>
                 </div>
             </div>
@@ -233,7 +233,7 @@
                 btn.textContent = '🙈';
             } else {
                 input.type = 'password';
-                btn.textContent = '👁';
+                btn.textContent = '🙉';
             }
         }
     </script>
