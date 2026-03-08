@@ -13,8 +13,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="css/login-style.css">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-<<<<<<< HEAD
-=======
     <style>
         /* ===== Password Requirements ===== */
         .password-reqs {
@@ -73,7 +71,6 @@
             transform: rotate(45deg);
         }
     </style>
->>>>>>> f88f49bbc623c4dcecf2fbf29b3238f8f6b4161b
 </head>
 <body>
 
@@ -116,18 +113,11 @@
             <div class="input-group">
                 <label for="password">Mật khẩu / パスワード</label>
                 <div class="password-wrapper">
-<<<<<<< HEAD
-                    <input type="password" id="password" name="password" required placeholder="••••••••" minlength="6">
-=======
                     <input type="password" id="password" name="password" required placeholder="••••••••" minlength="8">
->>>>>>> f88f49bbc623c4dcecf2fbf29b3238f8f6b4161b
                     <button type="button" class="toggle-password" onclick="togglePassword('password', this)" title="Hiện/Ẩn mật khẩu">
                         👁
                     </button>
                 </div>
-<<<<<<< HEAD
-=======
-                
                 <div class="password-reqs">
                     <div class="reqs-title">YÊU CẦU BẢO MẬT</div>
                     <div class="reqs-grid">
@@ -137,7 +127,6 @@
                         <div class="req-item" id="req-upper"><span class="req-icon"></span> Chứa chữ hoa (A-Z)</div>
                     </div>
                 </div>
->>>>>>> f88f49bbc623c4dcecf2fbf29b3238f8f6b4161b
             </div>
 
             <div class="input-group">
@@ -196,16 +185,6 @@
             createKana();
         }
 
-<<<<<<< HEAD
-        // Client-side validation
-        document.getElementById('registerForm').addEventListener('submit', function(e) {
-            const pw = document.getElementById('password').value;
-            const cpw = document.getElementById('confirmPassword').value;
-            
-            if (pw.length < 6) {
-                e.preventDefault();
-                alert('Mật khẩu phải có ít nhất 6 ký tự!');
-=======
         // Password validation logic
         const passwordInput = document.getElementById('password');
         const reqLength = document.getElementById('req-length');
@@ -237,7 +216,6 @@
             if (pw.length < 8 || !/\d/.test(pw) || !/[a-z]/.test(pw) || !/[A-Z]/.test(pw)) {
                 e.preventDefault();
                 alert('Mật khẩu chưa đáp ứng đủ yêu cầu bảo mật!');
->>>>>>> f88f49bbc623c4dcecf2fbf29b3238f8f6b4161b
                 return;
             }
             

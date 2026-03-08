@@ -1,6 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ page import="com.japaneselearning.model.User" %>
-<<%
+<%
     // Get user from session (parent page should have already validated)
     User navUser = (User) session.getAttribute("user");
     String currentPage = request.getParameter("activePage");

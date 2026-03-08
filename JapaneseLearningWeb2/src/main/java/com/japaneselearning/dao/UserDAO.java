@@ -2,6 +2,7 @@ package com.japaneselearning.dao;
 
 import com.japaneselearning.model.User;
 import com.japaneselearning.utils.DBConnection;
+import com.japaneselearning.utils.PasswordUtils;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -19,7 +20,7 @@ public class UserDAO {
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setString(1, user.getUsername());
-            ps.setString(2, user.getPassword());
+            ps.setString(2, PasswordUtils.hashPassword(user.getPassword()));
             ps.setString(3, user.getEmail());
             ps.setString(4, user.getFullName());
 
@@ -32,17 +33,19 @@ public class UserDAO {
 
     // Đăng nhập
     public User login(String username, String password) {
-        String sql = "SELECT * FROM users WHERE username=? AND password=? AND (status='ACTIVE' OR status='BANNED' OR status='BAN')";
+        String sql = "SELECT * FROM users WHERE username=? AND (status='ACTIVE' OR status='BANNED' OR status='BAN')";
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setString(1, username);
-            ps.setString(2, password);
 
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                return mapResultSetToUser(rs);
+                String hashedPassword = rs.getString("password");
+                if (PasswordUtils.checkPassword(password, hashedPassword)) {
+                    return mapResultSetToUser(rs);
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -141,7 +144,7 @@ public class UserDAO {
         String sql = "UPDATE users SET password=? WHERE email=?";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, newPassword);
+            ps.setString(1, PasswordUtils.hashPassword(newPassword));
             ps.setString(2, email);
             return ps.executeUpdate() > 0;
         } catch (Exception e) { e.printStackTrace(); }
@@ -173,7 +176,7 @@ public class UserDAO {
             ps.setString(1, fullName);
             ps.setString(2, email);
             if (password != null && !password.trim().isEmpty()) {
-                ps.setString(3, password);
+                ps.setString(3, PasswordUtils.hashPassword(password));
                 ps.setInt(4, userId);
             } else {
                 ps.setInt(3, userId);
