@@ -71,11 +71,27 @@ public class GoogleLoginServlet extends HttpServlet {
 
                     // Send email
                     try {
-                        String scheme = request.getScheme(); 
-                        String serverName = request.getServerName();
-                        int serverPort = request.getServerPort();
+                        // Dựng link xác thực hỗ trợ Reverse Proxy
+                        String scheme = request.getHeader("X-Forwarded-Proto");
+                        if (scheme == null) scheme = request.getScheme();
+                        
+                        String serverName = request.getHeader("X-Forwarded-Host");
+                        if (serverName == null) serverName = request.getServerName();
+                        
+                        String portHeader = request.getHeader("X-Forwarded-Port");
+                        int serverPort = (portHeader != null) ? Integer.parseInt(portHeader) : request.getServerPort();
+                        
                         String contextPath = request.getContextPath();
-                        String appBaseUrl = scheme + "://" + serverName + ":" + serverPort + contextPath;
+                        
+                        String appBaseUrl;
+                        if (("http".equalsIgnoreCase(scheme) && serverPort == 80) || 
+                            ("https".equalsIgnoreCase(scheme) && serverPort == 443) ||
+                            (request.getHeader("X-Forwarded-Host") != null)) {
+                            appBaseUrl = scheme + "://" + serverName + contextPath;
+                        } else {
+                            appBaseUrl = scheme + "://" + serverName + ":" + serverPort + contextPath;
+                        }
+                        
                         String verifyLink = appBaseUrl + "/verify-register?token=" + token;
 
                         String subject = "Xác nhận đăng ký tài khoản Google - Japanese Learning";
