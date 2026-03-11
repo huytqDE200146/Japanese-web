@@ -385,7 +385,7 @@
 </div>
 
 <script>
-    var API_URL = "http://127.0.0.1:8000/api/chat/stream";
+    var API_URL = "https://hungerly-somnolently-kiley.ngrok-free.dev/api/chat/stream";
     var IS_VIP = <%= isVip%>;
     var MAX_FREE_CHATS = 5;
     window.chatHistory = window.chatHistory || [];
