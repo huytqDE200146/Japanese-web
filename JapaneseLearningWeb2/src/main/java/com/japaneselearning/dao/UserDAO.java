@@ -14,7 +14,7 @@ public class UserDAO {
     // Đăng ký người dùng mới
     public boolean register(User user) {
         String sql = "INSERT INTO users(username, password, email, full_name, level, role, status) "
-                   + "VALUES (?, ?, ?, ?, 5, 'USER', 'ACTIVE')";
+                   + "VALUES (?, ?, ?, ?, 0, 'USER', 'ACTIVE')";
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -73,7 +73,7 @@ public class UserDAO {
     // Đăng ký user từ Google
     public User registerGoogleUser(String googleId, String email, String fullName) {
         String sql = "INSERT INTO users(username, password, email, full_name, level, role, status, google_id) "
-                   + "VALUES (?, '', ?, ?, 5, 'USER', 'ACTIVE', ?)";
+                   + "VALUES (?, '', ?, ?, 0, 'USER', 'ACTIVE', ?)";
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
