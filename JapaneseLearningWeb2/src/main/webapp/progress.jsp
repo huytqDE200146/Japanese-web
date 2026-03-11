@@ -130,6 +130,7 @@
     <p>© 2026 <span class="footer-brand">日本語学習</span> - Japanese Learning Platform.</p>
 </footer>
 
+<jsp:include page="components/chatbot.jsp" />
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>

@@ -63,8 +63,8 @@
                     </a>
                 </li>
                 <li>
-                    <a href="ai-chat.jsp" class="nav-link <%= "ai-chat".equals(currentPage) ? "active" : "" %>">
-                        <span class="nav-icon">💬</span>
+                    <a href="javascript:void(0)" class="nav-link <%= "ai-chat".equals(currentPage) ? "active" : "" %>" onclick="toggleChat()">
+                        <span class="nav-icon">🤖</span>
                         <span class="nav-text">AI Chat</span>
                     </a>
                 </li>
@@ -130,6 +130,7 @@
         </div>
     </div>
 </nav>
+<jsp:include page="/components/chatbot.jsp" />
 
 <style>
 /* ===== ENHANCED NAVBAR STYLES ===== */

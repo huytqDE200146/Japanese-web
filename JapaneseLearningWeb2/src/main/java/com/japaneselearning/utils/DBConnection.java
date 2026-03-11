@@ -6,11 +6,11 @@ import java.sql.DriverManager;
 public class DBConnection {
 
     private static final String URL
-            = "jdbc:sqlserver://localhost:1433;databaseName=japanese_web;encrypt=true;trustServerCertificate=true";
-    private static final String USER = "sa";
+            = "jdbc:sqlserver://SQL8006.site4now.net;databaseName=db_ac68c7_japaneseweb;encrypt=true;trustServerCertificate=true";
+    private static final String USER = "db_ac68c7_japaneseweb_admin";
     
     // Lưu ý: Thay đổi mật khẩu này cho đúng với cấu hình SQL Server trên máy bạn
-    private static final String PASSWORD = "sa"; 
+    private static final String PASSWORD = "Nhaphuong@123"; 
 
     public static Connection getConnection() {
         try {

@@ -180,6 +180,7 @@
     <jsp:param name="activePage" value="quiz" />
 </jsp:include>
 
+<div id="ai-readable-context">
 <main class="main-container">
     <!-- Hero -->
     <section class="quiz-hero animate-fade-in">
@@ -311,6 +312,7 @@
         <% } %>
     </div>
 </main>
+</div>
 
 <!-- ===== AI QUIZ OVERLAY ===== -->
 <div id="aiQuizOverlay" class="quiz-overlay">
@@ -628,6 +630,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 </script>
+<jsp:include page="components/chatbot.jsp" />
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

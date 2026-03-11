@@ -528,7 +528,7 @@
                 </div>
             </div>
 
-            <div class="lesson-content-area animate-fade-in">
+            <div class="lesson-content-area animate-fade-in" id="ai-readable-context">
                 <% if (content != null && !content.isEmpty()) { %>
                     <%= content %>
                 <% } else { %>
@@ -607,7 +607,7 @@
                         <span class="quick-link-icon">🤖</span>
                         <span class="quick-link-text">Quiz AI</span>
                     </a>
-                    <a href="ai-chat.jsp" class="quick-link">
+                    <a href="javascript:void(0)" class="quick-link" onclick="toggleChat()">
                         <span class="quick-link-icon">🤖</span>
                         <span class="quick-link-text">Hỏi AI</span>
                     </a>
@@ -976,6 +976,6 @@ if (countdownEl && btnComplete) {
     <p>© 2026 <span class="footer-brand">日本語学習</span> - Japanese Learning Platform. All rights reserved.</p>
 </footer>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<jsp:include page="components/chatbot.jsp" /><script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
