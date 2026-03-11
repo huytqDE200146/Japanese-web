@@ -2,19 +2,26 @@
 <%@page import="com.japaneselearning.model.User"%>
 
 <%
-    User chatUser = (User) session.getAttribute("user");
-    boolean isVip = false;
-    if (chatUser != null) {
-        try {
-            isVip = chatUser.hasPremiumAccess();
-        } catch (Exception e) {
-            isVip = false;
+    // =================================================================
+    // LỚP BẢO VỆ CẤP SERVER: CHỐNG NHÚNG FILE NHIỀU LẦN (SINGLETON)
+    // Nếu chatbot đã được nạp 1 lần ở Navbar, nó sẽ bỏ qua các lần nhúng sau
+    // =================================================================
+    if (request.getAttribute("CHATBOT_ALREADY_LOADED") == null) {
+        request.setAttribute("CHATBOT_ALREADY_LOADED", true);
+
+        User chatUser = (User) session.getAttribute("user");
+        boolean isVip = false;
+        if (chatUser != null) {
+            try {
+                isVip = chatUser.hasPremiumAccess();
+            } catch (Exception e) {
+                isVip = false;
+            }
         }
-    }
 %>
 
 <style>
-    /* ... (GIỮ NGUYÊN TOÀN BỘ CSS XỊN XÒ TỪ BẢN TRƯỚC) ... */
+    /* CSS GIAO DIỆN (Đã tối ưu) */
     #chat-launcher {
         position: fixed;
         bottom: 25px;
@@ -103,7 +110,7 @@
     }
     .header-name {
         font-weight: 600;
-        font-size: 18px;
+        font-size: 16px;
         letter-spacing: 0.5px;
     }
     .quota-text {
@@ -152,13 +159,11 @@
         background: rgba(188,0,45,0.2);
         border-radius: 3px;
     }
-
-    /* STYLE ĐƯỢC TỐI ƯU CHO TEXT ĐỂ DỄ ĐỌC TỪNG CÂU */
     .message {
         max-width: 88%;
         padding: 12px 16px;
         border-radius: 18px;
-        font-size: 17px;
+        font-size: 14.5px;
         line-height: 1.6;
         word-wrap: break-word;
         box-shadow: 0 2px 8px rgba(0,0,0,0.04);
@@ -190,8 +195,7 @@
     .bot-msg strong {
         color: #bc002d;
         font-weight: 700;
-    } /* Bôi đậm màu đỏ chuẩn Nhật */
-
+    }
     .thinking-box {
         display: flex;
         align-items: center;
@@ -244,7 +248,7 @@
         outline: none;
         transition: 0.3s;
         font-family: inherit;
-        font-size: 17px;
+        font-size: 14.5px;
         background: #f9f9f9;
     }
     #chat-input:focus {
@@ -344,7 +348,7 @@
 <div id="chat-launcher" onclick="toggleChat()">✨</div>
 
 <div id="chat-window">
-    <div class="chat-header" id="chat-header" onclick="restoreFromMinimized(event)">
+    <div class="chat-header" id="chat-header" onclick="restoreFromMinimized()">
         <div class="header-title-box">
             <div class="header-avatar">🤖</div>
             <div class="header-text">
@@ -381,18 +385,11 @@
 </div>
 
 <script>
-    // ====================================================================
-    // FIX LỖI NHÚNG ĐÚP: Dùng 'var' để biến không bao giờ bị xung đột
-    // ====================================================================
     var API_URL = "http://127.0.0.1:8000/api/chat/stream";
     var IS_VIP = <%= isVip%>;
     var MAX_FREE_CHATS = 5;
+    window.chatHistory = window.chatHistory || [];
 
-    // Nếu mảng chatHistory đã được tạo từ lần nhúng trước thì xài lại, chưa có thì tạo mới
-    var chatHistory = window.chatHistory || [];
-    window.chatHistory = chatHistory;
-
-    // ================= QUOTA LOGIC =================
     function getTodayString() {
         var d = new Date();
         return d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate();
@@ -400,113 +397,88 @@
 
     function checkQuotaAndUpdateUI() {
         try {
-            var textToDisplay = "";
-            var shouldLock = false;
+            var quotaEl = document.getElementById('quota-display');
+            if (!quotaEl)
+                return true;
 
             if (IS_VIP) {
-                textToDisplay = "👑 Premium Member";
-            } else {
-                var date = localStorage.getItem('ai_chat_date');
-                var count = localStorage.getItem('ai_chat_count');
-                var today = getTodayString();
-
-                if (date !== today || count === null || isNaN(parseInt(count))) {
-                    count = MAX_FREE_CHATS;
-                    localStorage.setItem('ai_chat_date', today);
-                    localStorage.setItem('ai_chat_count', count);
-                }
-
-                count = parseInt(count);
-                textToDisplay = "Còn " + count + "/" + MAX_FREE_CHATS + " lượt hôm nay";
-
-                if (count <= 0) {
-                    shouldLock = true;
-                }
+                quotaEl.innerText = "👑 Premium Member";
+                return true;
             }
 
-            var quotaEls = document.querySelectorAll('.quota-text');
-            quotaEls.forEach(function (el) {
-                el.innerText = textToDisplay;
-            });
+            var date = localStorage.getItem('ai_chat_date');
+            var count = localStorage.getItem('ai_chat_count');
+            var today = getTodayString();
 
-            if (shouldLock) {
-                document.querySelectorAll("#chat-messages").forEach(function (el) {
-                    el.style.display = "none";
-                });
-                document.querySelectorAll("#premium-lock-screen").forEach(function (el) {
-                    el.style.display = "flex";
-                });
-                document.querySelectorAll("#chat-input").forEach(function (el) {
-                    el.disabled = true;
-                    el.placeholder = "Vui lòng nâng cấp VIP...";
-                });
-                document.querySelectorAll("#send-btn").forEach(function (el) {
-                    el.disabled = true;
-                });
+            if (date !== today || count === null || isNaN(parseInt(count))) {
+                count = MAX_FREE_CHATS;
+                localStorage.setItem('ai_chat_date', today);
+                localStorage.setItem('ai_chat_count', count);
+            }
+
+            count = parseInt(count);
+            quotaEl.innerText = "Còn " + count + "/" + MAX_FREE_CHATS + " lượt hôm nay";
+
+            if (count <= 0) {
+                document.getElementById("chat-messages").style.display = "none";
+                document.getElementById("premium-lock-screen").style.display = "flex";
+                document.getElementById("chat-input").disabled = true;
+                document.getElementById("chat-input").placeholder = "Vui lòng nâng cấp VIP...";
+                document.getElementById("send-btn").disabled = true;
                 return false;
             }
             return true;
 
         } catch (error) {
-            console.warn("Lỗi bộ nhớ (có thể do ẩn danh):", error);
-            document.querySelectorAll('.quota-text').forEach(function (el) {
+            var el = document.getElementById('quota-display');
+            if (el)
                 el.innerText = "Còn 5/5 lượt (Ẩn danh)";
-            });
             return true;
         }
     }
 
-    // ================= WINDOW CONTROLS =================
     function toggleChat(e) {
         if (e)
             e.stopPropagation();
-        document.querySelectorAll("#chat-window").forEach(function (win) {
-            var launcher = document.getElementById("chat-launcher");
-            if (win.style.display === "none" || win.style.display === "") {
-                win.style.display = "flex";
-                win.classList.remove("minimized");
-                if (launcher)
-                    launcher.style.display = "none";
-                if (checkQuotaAndUpdateUI()) {
-                    var inp = win.querySelector("#chat-input");
-                    if (inp)
-                        inp.focus();
-                }
-            } else {
-                win.style.display = "none";
-                if (launcher)
-                    launcher.style.display = "block";
+        var win = document.getElementById("chat-window");
+        var launcher = document.getElementById("chat-launcher");
+        if (win.style.display === "none" || win.style.display === "") {
+            win.style.display = "flex";
+            win.classList.remove("minimized");
+            if (launcher)
+                launcher.style.display = "none";
+            if (checkQuotaAndUpdateUI()) {
+                var inp = document.getElementById("chat-input");
+                if (inp)
+                    inp.focus();
             }
-        });
+        } else {
+            win.style.display = "none";
+            if (launcher)
+                launcher.style.display = "block";
+        }
     }
     function toggleMinimize(e) {
-        e.stopPropagation();
-        document.querySelectorAll("#chat-window").forEach(function (w) {
-            w.classList.add("minimized");
-        });
+        if (e)
+            e.stopPropagation();
+        document.getElementById("chat-window").classList.add("minimized");
     }
-    function restoreFromMinimized(e) {
-        document.querySelectorAll("#chat-window").forEach(function (win) {
-            if (win.classList.contains("minimized")) {
-                win.classList.remove("minimized");
-                if (checkQuotaAndUpdateUI()) {
-                    var inp = win.querySelector("#chat-input");
-                    if (inp)
-                        inp.focus();
-                }
-            }
-        });
+    function restoreFromMinimized() {
+        var win = document.getElementById("chat-window");
+        if (win.classList.contains("minimized")) {
+            win.classList.remove("minimized");
+            if (checkQuotaAndUpdateUI())
+                document.getElementById("chat-input").focus();
+        }
     }
     function toggleMaximize(e) {
-        e.stopPropagation();
-        document.querySelectorAll("#chat-window").forEach(function (win) {
-            if (win.classList.contains("minimized"))
-                win.classList.remove("minimized");
-            win.classList.toggle("maximized");
-        });
+        if (e)
+            e.stopPropagation();
+        var win = document.getElementById("chat-window");
+        win.classList.remove("minimized");
+        win.classList.toggle("maximized");
     }
 
-    // ================= MARKDOWN FORMATTER =================
     function formatMarkdown(text) {
         var html = text;
         html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
@@ -518,7 +490,21 @@
         return html;
     }
 
-    // ================= CHAT LOGIC =================
+    function scrollToBottom() {
+        var box = document.getElementById("chat-messages");
+        if (box)
+            box.scrollTop = box.scrollHeight;
+    }
+
+    function addMessage(htmlContent, sender) {
+        var msgDiv = document.createElement("div");
+        msgDiv.className = "message " + (sender === 'user' ? "user-msg" : "bot-msg");
+        msgDiv.innerHTML = htmlContent;
+        document.getElementById("chat-messages").appendChild(msgDiv);
+        scrollToBottom();
+        return msgDiv;
+    }
+
     function handleKeyPress(event) {
         if (event.key === "Enter")
             sendMessage();
@@ -528,14 +514,8 @@
         if (!checkQuotaAndUpdateUI())
             return;
 
-        var activeWindow = Array.from(document.querySelectorAll('#chat-window')).find(function (w) {
-            return w.style.display !== 'none';
-        }) || document.querySelector('#chat-window');
-        if (!activeWindow)
-            return;
-
-        var inputField = activeWindow.querySelector("#chat-input");
-        var sendBtn = activeWindow.querySelector("#send-btn");
+        var inputField = document.getElementById("chat-input");
+        var sendBtn = document.getElementById("send-btn");
         var userText = inputField.value.trim();
         if (!userText)
             return;
@@ -550,14 +530,14 @@
             checkQuotaAndUpdateUI();
         }
 
-        addMessage(userText, 'user', activeWindow);
+        addMessage(userText, 'user');
         inputField.value = "";
         inputField.disabled = true;
         sendBtn.disabled = true;
 
         var thinkingId = "think-" + Date.now();
         var thinkingHTML = '<div class="thinking-box" id="' + thinkingId + '"><span>Đang thu thập dữ liệu...</span><div class="thinking-dots"><div class="tdot"></div><div class="tdot"></div><div class="tdot"></div></div></div>';
-        var thinkingBubble = addMessage(thinkingHTML, 'bot', activeWindow);
+        var thinkingBubble = addMessage(thinkingHTML, 'bot');
 
         var pageContext = "Người dùng đang ở trang: " + document.title;
         var activeQuizOverlay = document.querySelector('.quiz-overlay[style*="display: block"]');
@@ -588,7 +568,6 @@
             var botMessageDiv = null;
 
             while (true) {
-                // Dùng var thay const để an toàn tuyệt đối
                 var streamData = await reader.read();
                 var done = streamData.done;
                 var value = streamData.value;
@@ -598,7 +577,7 @@
 
                 if (isFirstChunk) {
                     thinkingBubble.remove();
-                    botMessageDiv = addMessage("", 'bot', activeWindow);
+                    botMessageDiv = addMessage("", 'bot');
                     isFirstChunk = false;
                 }
 
@@ -617,7 +596,7 @@
                 }
 
                 botMessageDiv.innerHTML = formatMarkdown(currentBotText);
-                scrollToBottom(activeWindow);
+                scrollToBottom();
             }
 
             window.chatHistory.push({role: "user", content: userText});
@@ -625,7 +604,7 @@
 
         } catch (error) {
             thinkingBubble.remove();
-            addMessage("❌ Server AI chưa phản hồi. Vui lòng thử lại.", 'bot', activeWindow);
+            addMessage("❌ Server AI chưa phản hồi. Vui lòng thử lại.", 'bot');
             if (!IS_VIP) {
                 try {
                     var count = parseInt(localStorage.getItem('ai_chat_count'));
@@ -642,22 +621,10 @@
         }
     }
 
-    function addMessage(htmlContent, sender, activeWindow) {
-        var msgDiv = document.createElement("div");
-        msgDiv.className = "message " + (sender === 'user' ? "user-msg" : "bot-msg");
-        msgDiv.innerHTML = htmlContent;
-        var chatMessages = activeWindow.querySelector("#chat-messages");
-        chatMessages.appendChild(msgDiv);
-        scrollToBottom(activeWindow);
-        return msgDiv;
-    }
-
-    function scrollToBottom(activeWindow) {
-        var box = activeWindow.querySelector("#chat-messages");
-        if (box)
-            box.scrollTop = box.scrollHeight;
-    }
-
-    // Ép chạy cập nhật giao diện
+    // Khởi chạy khi load xong
     checkQuotaAndUpdateUI();
 </script>
+
+<%
+    } // KẾT THÚC LỚP BẢO VỆ SINGLETON
+%>
