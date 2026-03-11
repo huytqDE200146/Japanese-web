@@ -1,0 +1,220 @@
+/* Lesson Content Styles - Dark Theme */
+/* This CSS is embedded directly in the lessonDetail.jsp to override lesson HTML styles */
+
+/* Note: These styles are applied in lessonDetail.jsp via .lesson-content-area overrides */
+/* The HTML files will have their inline styles removed, using simpler class-based structure */
+
+/* Base Container */
+.lesson-container {
+    font-family: 'Poppins', 'Noto Serif JP', sans-serif;
+    color: #e8e8e8;
+    line-height: 1.8;
+}
+
+/* Section Cards */
+.lesson-section {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 1.5rem 2rem;
+    margin-bottom: 1.5rem;
+}
+
+/* Headings */
+.lesson-section h1 {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 1.8rem;
+    color: #ffb7c5;
+    margin-bottom: 1rem;
+    border-bottom: 2px solid rgba(188, 0, 45, 0.3);
+    padding-bottom: 0.5rem;
+}
+
+.lesson-section h2 {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 1.4rem;
+    color: #ffb7c5;
+    margin-bottom: 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.lesson-section h3 {
+    font-size: 1.1rem;
+    color: #fff;
+    margin-bottom: 0.5rem;
+}
+
+/* Grammar Structure Box */
+.grammar-structure {
+    background: linear-gradient(135deg, rgba(188, 0, 45, 0.2) 0%, rgba(255, 183, 197, 0.1) 100%);
+    border: 1px solid rgba(255, 183, 197, 0.3);
+    border-radius: 12px;
+    padding: 1rem 1.5rem;
+    margin: 1rem 0;
+    font-family: 'Noto Serif JP', serif;
+    font-size: 1.2rem;
+    color: #fff;
+    display: inline-block;
+}
+
+.grammar-structure .particle {
+    color: #ff4d6d;
+    font-weight: bold;
+}
+
+/* Example Box */
+.example-box {
+    background: rgba(188, 0, 45, 0.15);
+    border-left: 4px solid #bc002d;
+    border-radius: 0 12px 12px 0;
+    padding: 1rem 1.5rem;
+    margin: 1rem 0;
+}
+
+.example-box .japanese {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 1.1rem;
+    color: #fff;
+    margin-bottom: 0.5rem;
+}
+
+.example-box .translation {
+    color: #a0a0a0;
+    font-size: 0.95rem;
+}
+
+/* Note/Tip Box */
+.note-box {
+    background: rgba(255, 215, 0, 0.1);
+    border-left: 4px solid #ffd700;
+    border-radius: 0 12px 12px 0;
+    padding: 0.8rem 1.2rem;
+    margin: 1rem 0;
+    color: #ffd700;
+    font-size: 0.95rem;
+}
+
+.note-box::before {
+    content: '💡 ';
+}
+
+/* Vocabulary Table */
+.vocab-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin: 1rem 0;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.vocab-table thead {
+    background: linear-gradient(135deg, #bc002d 0%, #881337 100%);
+}
+
+.vocab-table th {
+    padding: 0.8rem 1rem;
+    text-align: left;
+    color: #fff;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.vocab-table tbody tr {
+    background: rgba(255, 255, 255, 0.03);
+    transition: all 0.2s ease;
+}
+
+.vocab-table tbody tr:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.vocab-table tbody tr:nth-child(even) {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.vocab-table td {
+    padding: 0.8rem 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.vocab-table .jp-word {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: #fff;
+}
+
+.vocab-table .reading {
+    color: #a0a0a0;
+    font-size: 0.85rem;
+}
+
+.vocab-table .meaning {
+    color: #e8e8e8;
+}
+
+/* Character Grid (Hiragana/Katakana) */
+.char-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    gap: 0.8rem;
+    margin: 1rem 0;
+}
+
+.char-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 1rem;
+    text-align: center;
+    transition: all 0.2s ease;
+}
+
+.char-card:hover {
+    background: rgba(188, 0, 45, 0.2);
+    border-color: #ffb7c5;
+    transform: translateY(-3px);
+}
+
+.char-card .char {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 2rem;
+    color: #fff;
+    display: block;
+}
+
+.char-card .romaji {
+    color: #a0a0a0;
+    font-size: 0.85rem;
+    margin-top: 0.3rem;
+}
+
+/* Section Divider */
+.section-divider {
+    border: none;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 183, 197, 0.3), transparent);
+    margin: 2rem 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .lesson-section {
+        padding: 1rem 1.2rem;
+    }
+    
+    .grammar-structure {
+        font-size: 1rem;
+        padding: 0.8rem 1rem;
+    }
+    
+    .char-grid {
+        grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+    }
+}

@@ -1,5 +1,5 @@
 # ===== BƯỚC 1: Build WAR từ source =====
-FROM maven:3.9-eclipse-temurin-17 AS build
+FROM maven:3.9-eclipse-temurin-24 AS build
 
 WORKDIR /app
 
@@ -12,7 +12,7 @@ COPY src ./src
 RUN mvn clean package -DskipTests -B
 
 # ===== BƯỚC 2: Deploy lên Tomcat =====
-FROM tomcat:10.1-jdk17
+FROM tomcat:10.1-jdk21
 
 # Xóa các app mặc định của Tomcat cho sạch server
 RUN rm -rf /usr/local/tomcat/webapps/*
