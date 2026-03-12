@@ -62,12 +62,7 @@
                         <span class="nav-text">Progress</span>
                     </a>
                 </li>
-                <li>
-                    <a href="javascript:void(0)" class="nav-link <%= "ai-chat".equals(currentPage) ? "active" : "" %>" onclick="toggleChat()">
-                        <span class="nav-icon">🤖</span>
-                        <span class="nav-text">AI Chat</span>
-                    </a>
-                </li>
+
                 <li>
                     <a href="ai-voice-practice.jsp" class="nav-link <%= "ai-voice".equals(currentPage) ? "active" : "" %>">
                         <span class="nav-icon">🤖</span>
