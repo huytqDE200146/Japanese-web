@@ -75,26 +75,23 @@ public class RegisterServlet extends HttpServlet {
         
         try {
             // Dựng link xác thực hỗ trợ Reverse Proxy (như Render)
-            String scheme = request.getHeader("X-Forwarded-Proto");
-            if (scheme == null) scheme = request.getScheme();
-            
-            String serverName = request.getHeader("X-Forwarded-Host");
-            if (serverName == null) serverName = request.getServerName();
-            
-            String portHeader = request.getHeader("X-Forwarded-Port");
-            int serverPort = (portHeader != null) ? Integer.parseInt(portHeader) : request.getServerPort();
-            
             String contextPath = request.getContextPath();
-            
-            // Xây dựng appBaseUrl
             String appBaseUrl;
-            if (("http".equalsIgnoreCase(scheme) && serverPort == 80) || 
-                ("https".equalsIgnoreCase(scheme) && serverPort == 443) ||
-                (request.getHeader("X-Forwarded-Host") != null)) {
-                // Trên Render hoặc khi dùng port chuẩn, bỏ port đi
-                appBaseUrl = scheme + "://" + serverName + contextPath;
+            
+            String forwardedHost = request.getHeader("X-Forwarded-Host");
+            if (forwardedHost != null) {
+                // Đang chạy sau reverse proxy (Render) → luôn dùng https, không thêm port
+                appBaseUrl = "https://" + forwardedHost + contextPath;
             } else {
-                appBaseUrl = scheme + "://" + serverName + ":" + serverPort + contextPath;
+                // Chạy local
+                String scheme = request.getScheme();
+                int serverPort = request.getServerPort();
+                String serverName = request.getServerName();
+                if (("http".equals(scheme) && serverPort == 80) || ("https".equals(scheme) && serverPort == 443)) {
+                    appBaseUrl = scheme + "://" + serverName + contextPath;
+                } else {
+                    appBaseUrl = scheme + "://" + serverName + ":" + serverPort + contextPath;
+                }
             }
             
             String verifyLink = appBaseUrl + "/verify-register?token=" + token;
