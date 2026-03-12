@@ -542,76 +542,89 @@
 /* Mobile Responsive */
 @media (max-width: 1024px) {
     .navbar-container {
-        padding: 0 1rem;
+        padding: 0 1rem !important;
     }
     .navbar-toggle {
-        display: flex;
+        display: flex !important;
+        z-index: 10001;
     }
     .navbar-menu {
-        position: fixed;
-        top: 70px;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: #1a1a2e;
-        backdrop-filter: blur(20px);
-        flex-direction: column;
-        padding: 2rem;
-        margin-left: 0;
-        transform: translateX(-100%);
-        transition: transform 0.3s ease;
-        z-index: 9999;
-        overflow-y: auto;
+        position: fixed !important;
+        top: 70px !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        width: 100% !important;
+        height: calc(100vh - 70px) !important;
+        background: #1a1a2e !important;
+        flex-direction: column !important;
+        padding: 1.5rem !important;
+        margin: 0 !important;
+        transform: translateX(-100%) !important;
+        transition: transform 0.3s ease !important;
+        z-index: 9999 !important;
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
+        display: flex !important;
+        gap: 0 !important;
     }
     .navbar-menu.active {
-        transform: translateX(0);
+        transform: translateX(0) !important;
     }
     .navbar-links {
-        flex-direction: column;
-        width: 100%;
-        gap: 0.5rem;
+        flex-direction: column !important;
+        width: 100% !important;
+        gap: 0.3rem !important;
     }
     .navbar-links li {
-        width: 100%;
+        width: 100% !important;
     }
     .nav-link {
-        width: 100%;
-        padding: 1rem;
-        justify-content: flex-start;
+        width: 100% !important;
+        padding: 0.9rem 1rem !important;
+        justify-content: flex-start !important;
+        font-size: 1rem !important;
+        border-radius: 10px !important;
+    }
+    .nav-link:hover, .nav-link.active {
+        background: rgba(255, 107, 107, 0.15) !important;
     }
     .navbar-right {
-        flex-direction: column;
-        width: 100%;
-        margin-top: 2rem;
-        padding-top: 2rem;
-        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        flex-direction: column !important;
+        width: 100% !important;
+        margin-top: 1.5rem !important;
+        padding-top: 1.5rem !important;
+        border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+        position: static !important;
     }
     .premium-btn {
-        width: 100%;
-        justify-content: center;
-        padding: 1rem;
+        width: 100% !important;
+        justify-content: center !important;
+        padding: 1rem !important;
+        border-radius: 12px !important;
     }
     .user-profile {
-        width: 100%;
-        justify-content: center;
-        padding: 1rem;
+        width: 100% !important;
+        justify-content: center !important;
+        padding: 0.8rem 1rem !important;
     }
     .user-info {
-        display: none;
+        display: none !important;
     }
     .user-dropdown {
-        position: fixed;
-        top: auto;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        width: 100%;
-        border-radius: 16px 16px 0 0;
-        transform: translateY(100%);
-        z-index: 10000;
+        position: fixed !important;
+        top: auto !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        width: 100% !important;
+        border-radius: 16px 16px 0 0 !important;
+        transform: translateY(100%) !important;
+        z-index: 10000 !important;
+        background: #1a1a2e !important;
     }
     .user-dropdown.show {
-        transform: translateY(0);
+        transform: translateY(0) !important;
     }
 }
 
@@ -631,6 +644,14 @@ document.addEventListener('DOMContentLoaded', function() {
         toggle.addEventListener('click', function() {
             menu.classList.toggle('active');
             toggle.classList.toggle('active');
+        });
+        
+        // Close mobile menu when clicking a nav link
+        menu.querySelectorAll('.nav-link').forEach(function(link) {
+            link.addEventListener('click', function() {
+                menu.classList.remove('active');
+                toggle.classList.remove('active');
+            });
         });
     }
 });
