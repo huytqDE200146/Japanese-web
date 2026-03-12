@@ -39,7 +39,13 @@ public class PaymentServlet extends HttpServlet {
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute("user");
         
-        // Require login
+        // Xử lý cancel TRƯỚC khi kiểm tra login (session có thể hết hạn khi ở trang PayOS)
+        if ("/paymentCancel".equals(path)) {
+            handlePaymentCancel(request, response);
+            return;
+        }
+        
+        // Require login for other routes
         if (user == null) {
             response.sendRedirect("login.jsp");
             return;
@@ -48,9 +54,6 @@ public class PaymentServlet extends HttpServlet {
         switch (path) {
             case "/paymentSuccess":
                 handlePaymentSuccess(request, response, user);
-                break;
-            case "/paymentCancel":
-                handlePaymentCancel(request, response);
                 break;
             default:
                 response.sendRedirect("home.jsp");
