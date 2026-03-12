@@ -11,9 +11,19 @@ public class EmailUtility {
 
     // Brevo API configuration
     private static final String BREVO_API_URL = "https://api.brevo.com/v3/smtp/email";
-    private static final String API_KEY = "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";
+    private static final String API_KEY = getApiKey();
     private static final String SENDER_EMAIL = "de190574lenhaphuong@gmail.com";
     private static final String SENDER_NAME = "Japanese Learning Support";
+
+    private static String getApiKey() {
+        String envKey = System.getenv("BREVO_API_KEY");
+        if (envKey != null && !envKey.isEmpty()) {
+            System.out.println("[EmailUtility] Using BREVO_API_KEY from environment variable");
+            return envKey;
+        }
+        System.out.println("[EmailUtility] WARNING: BREVO_API_KEY env var not set, using fallback hardcoded key");
+        return "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";
+    }
 
     public static void sendEmail(String toAddress, String subject, String messageContent) throws MessagingException {
         OkHttpClient client = new OkHttpClient();
