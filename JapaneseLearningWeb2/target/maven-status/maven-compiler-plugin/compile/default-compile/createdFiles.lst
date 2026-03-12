@@ -17,7 +17,6 @@ com\japaneselearning\service\PayOSService$PaymentResponse.class
 com\japaneselearning\controller\VerifyForgotOtpServlet.class
 com\japaneselearning\model\Lesson.class
 com\japaneselearning\controller\admin\AdminUserServlet.class
-com\japaneselearning\utils\EmailUtility$1.class
 com\japaneselearning\utils\EmailUtility.class
 com\japaneselearning\dao\ProgressDAO.class
 com\japaneselearning\dao\UserDAO.class
