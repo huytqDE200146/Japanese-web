@@ -553,13 +553,15 @@
         left: 0;
         right: 0;
         bottom: 0;
-        background: rgba(26, 26, 46, 0.98);
+        background: #1a1a2e;
         backdrop-filter: blur(20px);
         flex-direction: column;
         padding: 2rem;
         margin-left: 0;
         transform: translateX(-100%);
         transition: transform 0.3s ease;
+        z-index: 9999;
+        overflow-y: auto;
     }
     .navbar-menu.active {
         transform: translateX(0);
@@ -606,6 +608,7 @@
         width: 100%;
         border-radius: 16px 16px 0 0;
         transform: translateY(100%);
+        z-index: 10000;
     }
     .user-dropdown.show {
         transform: translateY(0);
