@@ -19,7 +19,7 @@ import java.nio.charset.StandardCharsets;
 @WebServlet(name = "AIVoiceServlet", urlPatterns = {"/ai-voice"})
 public class AIVoiceServlet extends HttpServlet {
 
-    private static final String GROQ_API_KEY = "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";
+    private static final String GROQ_API_KEY = "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";
     private static final String GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
 
     @Override
