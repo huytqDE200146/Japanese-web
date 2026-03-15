@@ -483,7 +483,7 @@ const quizData = {
 
 // ==================== STATIC QUIZ ENGINE ====================
 let sCat=null, sQs=[], sIdx=0, sScore=0, sWrongs=[], sTimerInt=null, sSec=0, sAns=false;
-const SQ_COUNT = 10;
+const SQ_COUNT = 15;
 function shuffle(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
 
 function startStaticQuiz(cat) {
@@ -505,7 +505,7 @@ function showSQ(){
     document.getElementById('sQText').textContent=q.q;
     document.getElementById('sQSub').textContent=quizData[sCat].prompt;
     document.getElementById('sCounter').textContent='Câu '+(sIdx+1)+' / '+t;
-    document.getElementById('sProgress').style.width=((sIdx/t)*100)+'%';
+    document.getElementById('sProgress').style.width=(((sIdx+1)/t)*100)+'%';
     document.getElementById('sFeedback').textContent='';
     const g=document.getElementById('sOpts'); g.innerHTML='';
     q.opts.forEach(o=>{const b=document.createElement('button');b.className='option-btn';b.textContent=o;b.onclick=()=>selectSA(b,o,q.a);g.appendChild(b);});
@@ -559,7 +559,8 @@ async function generateAiQuiz(){
     try{
         const resp=await fetch('<%= request.getContextPath() %>/ai-quiz',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({lessonId:aiLessonId,numQuestions:aiNumQ})});
         if(!resp.ok){const e=await resp.json();throw new Error(e.error||'Server error');}
-        aiQs=await resp.json(); aiIdx=0; aiScore=0; aiWrongs=[]; aiSec=0; aiAns=false;
+        let rawQs=await resp.json();
+        aiQs=rawQs.map(q=>({...q,options:shuffle(q.options)})); aiIdx=0; aiScore=0; aiWrongs=[]; aiSec=0; aiAns=false;
         document.getElementById('aiLoading').style.display='none';
         document.getElementById('aiPlay').style.display='block';
         clearInterval(aiTimerInt);
@@ -572,7 +573,7 @@ function showAIQ(){
     aiAns=false;const q=aiQs[aiIdx],t=aiQs.length;
     document.getElementById('aiQText').textContent=q.question;
     document.getElementById('aiCounter').textContent='Câu '+(aiIdx+1)+' / '+t;
-    document.getElementById('aiProgress').style.width=((aiIdx/t)*100)+'%';
+    document.getElementById('aiProgress').style.width=(((aiIdx+1)/t)*100)+'%';
     document.getElementById('aiFeedback').textContent='';document.getElementById('aiFeedback').style.color='';
     const g=document.getElementById('aiOpts');g.innerHTML='';
     q.options.forEach(o=>{const b=document.createElement('button');b.className='q-opt-btn';b.textContent=o;b.onclick=()=>selectAIA(b,o,q.answer);g.appendChild(b);});

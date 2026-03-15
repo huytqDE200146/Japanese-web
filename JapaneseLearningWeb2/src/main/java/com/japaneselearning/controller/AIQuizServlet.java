@@ -16,6 +16,10 @@ import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import com.google.gson.JsonElement;
 
 @WebServlet(name = "AIQuizServlet", urlPatterns = {"/ai-quiz"})
 public class AIQuizServlet extends HttpServlet {
@@ -186,6 +190,19 @@ public class AIQuizServlet extends HttpServlet {
             if (!found) {
                 q.addProperty("answer", options.get(0).getAsString());
             }
+
+            // Shuffle options to ensure randomness
+            List<JsonElement> optList = new ArrayList<>();
+            for (int j = 0; j < options.size(); j++) {
+                optList.add(options.get(j));
+            }
+            Collections.shuffle(optList);
+
+            JsonArray shuffledOptions = new JsonArray();
+            for (JsonElement e : optList) {
+                shuffledOptions.add(e);
+            }
+            q.add("options", shuffledOptions);
 
             result.add(q);
         }
