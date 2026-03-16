@@ -724,7 +724,7 @@
 </style>
 
 <script>
-// ===== Web Speech API - Japanese TTS =====
+// ===== Web Speech API - Japanese TTS ===== // text to speech 
 document.addEventListener('DOMContentLoaded', function () {
     const jpRegex = /[\u3000-\u303F\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF\uFF00-\uFFEF\u3400-\u4DBF]+/g;
     const selectors = '.lesson-content-area .jp-word, .lesson-content-area .japanese, .lesson-content-area .grammar-structure';
